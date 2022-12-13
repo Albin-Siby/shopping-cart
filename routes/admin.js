@@ -1,6 +1,7 @@
 var express = require('express');
 const fileUpload = require('express-fileupload');
 var router = express.Router();
+var productHelper = require('../helpers/product-helper')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -44,8 +45,20 @@ router.get('/add-products', (req,res) => {
 })
 
 router.post('/add-products',fileUpload(), (req,res) => {
-  console.log(req.body)
-  console.log(req.files.image)
+  // console.log(req.body)
+  // console.log(req.files.image)
+
+  productHelper.addProduct(req.body, (id) => {
+    let image = req.files.image
+    image.mv('./public/product-images/'+id+".jpg", (err) => {
+      if(!err) {
+        res.render('admin/add-products')
+      } else {
+        console.log(err)
+      }
+    })
+    
+  })
 })
 
 module.exports = router;
