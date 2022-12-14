@@ -3,17 +3,36 @@
         <div class="container mt-5 pl-5">
             <h2 class="text-center">Login</h2>
             <form action="/login" method="post">
+
                 <div class="form-group mt-5">
+
+                    {{#if loginerr}}
+                        <h6 style="color: red;">Please enter a valid email  and password</h6>
+                    {{/if}}
+
                     <label>Email address</label>
-                    <input type="email" class="form-control" name="Email" placeholder="Enter email">
+                    
+                    {{#if loginerr}}
+                        <input type="email" class="form-control is-invalid" id="validationServer03" name="Email" placeholder="Enter email">
+                        {{!-- <div id="validationServer03Feedback" class="invalid-feedback">{{loginerr}}</div> --}}
+                    {{else}}
+                        <input type="email" class="form-control" name="Email" placeholder="Enter email">
+                    {{/if}}
+
                 </div>
 
                 <div class="form-group mt-3">
                     <label>Password</label>
-                    <input type="password" class="form-control" name="Password" placeholder="Password">
+
+                    {{#if loginerr}}
+                        <input type="password" class="form-control is-invalid" id="validationServer03" name="Password" placeholder="Password">
+                        {{!-- <div id="validationServer03Feedback" class="invalid-feedback">{{loginerr}}</div> --}}
+                    {{else}}
+                        <input type="password" class="form-control" name="Password" placeholder="Password">
+                    {{/if}}
                 </div>
                 <div class="mt-5">
-                    <a href="/signup">Don't have an account ? Signup.</a>
+                    <a href="/signup">Create new account ?</a>
                 <button type="submit" class="btn btn-primary float-end">Login</button>
                 </div>
             </form>
