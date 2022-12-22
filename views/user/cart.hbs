@@ -1,1 +1,33 @@
-<h1>CART PAGE....</h1>
+<section>
+    <div class="container">
+
+        <table class="table mt-5">
+            <thead>
+                <tr>
+
+                    <th scope="col">Item</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Quantity</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {{#each products}}
+                    <tr>
+
+                    <td><img src="/product-images/{{this._id}}.jpg" alt="" style="width: 70px;height: auto;"></td>
+                    <td>{{this.Name}}</td>
+                    <td>
+                        <button class="cart-item-count bg-secondary mr-3 " style="border: 1px solid;">-</button>  1  <button class="cart-item-count bg-secondary ml-3 " style="border: 1px solid;">+</button>
+                    </td>
+                    <td><a href="" class="btn btn-danger">Remove</a></td>
+
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+    </div>
+</section>
