@@ -1,12 +1,15 @@
 <section>
     <div class="container">
 
+        {{#if products}}
+
         <table class="table mt-5">
             <thead class="table-dark">
                 <tr>
 
                     <th scope="col">Item</th>
                     <th scope="col">Title</th>
+                    <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
                     <th scope="col"></th>
 
@@ -21,6 +24,7 @@
                    
                         <td class="p-3"><img src="/product-images/{{this.product._id}}.jpg" alt="" style="width: 70px;height: auto;"></td>
                         <td class="p-3">{{this.product.Name}}</td>
+                        <td class="p-3">Rs.{{this.product.Price}}</td>
                    
                     <td class="p-3">
                         <button class="cart-item-count bg-secondary mr-5 " style="border: 1px solid;" onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">-</button>
@@ -38,8 +42,33 @@
             </tbody>
         </table>
 
+        {{else}}
+
+            <div class="container mt-3 p-3" style="background-color: grey;">
+        		<h1 class="page-title" style="text-align: center;color:blue;">Your Cart</h1>
+        	</div>
+
+            <div id="cartGif">
+
+            <div class="d-flex justify-content-center m-5 text-center">
+                <img class="mx-auto " style=";" src="https://hakimitr.com/assets/website/images/empty-cart.gif" alt="">
+                
+            </div>
+            <div class="text-center mt-3">
+                <h4>Oops , Cart is empty</h4>
+                <h5>Please fill your cart</h5>
+                <a href="/" class="btn btn-warning mt-3">Continue Shopping</a>
+            </div>                    
+            </div>
+
+        {{/if}}
+
     </div>
 </section>
+<h1></h1>
+<footer>
+   
+</footer>
 
 <script>
     function changeQuantity(cartId,proId,count) {
@@ -55,8 +84,10 @@
             },
             method:"post",
             success: (response) => {
-                if(response) {
-                    document.getElementById(proId).innerHTML = quantity+count
+                if(response.maxLimit) {
+                   alert("Maximum limit reached")
+                } else {
+                     document.getElementById(proId).innerHTML = quantity+count
                 }
             }
         })

@@ -181,17 +181,24 @@ module.exports = {
     changeProductQuantity: (details) => {
         details.count = parseInt(details.count)
         return new Promise((res,rej) => {
+            if(details.count == -1 && details.quantity == 1) {
+                db.get().collection(collections.CART_COLLECTION).findOne({_id:ObjectId(details.product)})
+                .then((response) => {
+                    res({maxLimit: true})
+                })
+            } else {
            
-            db.get().collection(collections.CART_COLLECTION)
-            .updateOne(
-                {_id:ObjectId(details.cart),'products.item': ObjectId(details.product)},
-                {
-                    $inc:{'products.$.quantity':details.count}
-                }
-            ).then((response)=>{
-                //console.log(response)
-                res(true)
-            })  
+                db.get().collection(collections.CART_COLLECTION)
+                .updateOne(
+                    {_id:ObjectId(details.cart),'products.item': ObjectId(details.product)},
+                    {
+                        $inc:{'products.$.quantity':details.count}
+                    }
+                ).then((response)=>{
+                    //console.log(response)
+                    res(true)
+                })
+            }  
         })
     }
       
