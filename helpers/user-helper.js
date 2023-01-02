@@ -46,7 +46,7 @@ module.exports = {
                 if(proExist != -1) {
                     db.get().collection(collections.CART_COLLECTION)
                     .updateOne(
-                        {'products.item': ObjectId(prodId)},
+                        {user:ObjectId(userId),'products.item': ObjectId(prodId)},
                         {
                             $inc:{'products.$.quantity':1}
                         }
@@ -99,6 +99,11 @@ module.exports = {
                         foreignField: '_id',
                         as: 'product'
                     }
+                },
+                {
+                    $project:{
+                        item:1,quantity:1,product:{$arrayElemAt:["$product",0]}
+                    }
                 }
                 // {
                 //     $lookup:{
@@ -119,7 +124,7 @@ module.exports = {
                 //     }
                 // }
             ]).toArray()
-            console.log(cartItems)
+            //console.log(cartItems)
             res(cartItems)
            
         })
@@ -129,21 +134,21 @@ module.exports = {
     //         let count = 0
     //         let cart = db.get().collection(collections.CART_COLLECTION)
     //         .find({user: ObjectId(userId)}).toArray()
-    //         // .aggregate([
-    //         //     {
-    //         //        $match: {
-    //         //           user: ObjectId(userId),
-    //         //        },
-    //         //     },
-    //         //     {
-    //         //        $project: {
-    //         //           size: { $size: "$products" },
-    //         //        },
-    //         //     },
-    //         //  ])
-    //         //  .toArray();
+    //         .aggregate([
+    //             {
+    //                $match: {
+    //                   user: ObjectId(userId),
+    //                },
+    //             },
+    //             {
+    //                $project: {
+    //                   size: { $size: "$products" },
+    //                },
+    //             },
+    //          ])
+    //          .toArray();
              
-    //         //  res(cart[0].size)
+    //          res(cart[0].size)
     //         cart.forEach((item) => {
     //             count += item.products.length;
     //           });
@@ -172,6 +177,22 @@ module.exports = {
       
           res(count);
         });
-      }
+    },
+    changeProductQuantity: (details) => {
+        details.count = parseInt(details.count)
+        return new Promise((res,rej) => {
+           
+            db.get().collection(collections.CART_COLLECTION)
+            .updateOne(
+                {_id:ObjectId(details.cart),'products.item': ObjectId(details.product)},
+                {
+                    $inc:{'products.$.quantity':details.count}
+                }
+            ).then((response)=>{
+                //console.log(response)
+                res(true)
+            })  
+        })
+    }
       
 }
