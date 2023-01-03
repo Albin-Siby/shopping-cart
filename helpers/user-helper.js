@@ -156,8 +156,8 @@ module.exports = {
     //     })
     // }
 
-    getCartCount: (userId) => {
-        return new Promise(async(res,rej) => {
+    getCartProductCount: (userId) => {
+        return new Promise(async(res,rej) => {  
           let count = 0;
           let cart;
           try {
@@ -168,14 +168,39 @@ module.exports = {
             console.error(error);
             return rej(error);
           }
-      
-          if (Array.isArray(cart)) {
-            cart.forEach((item) => {
-              count += item.products.length;
-            });
-          }
-      
+          //console.log(cart[0].products)
+            if (Array.isArray(cart)) {
+                cart.forEach((item) => {
+                item.products.forEach((product) => {
+                    count += product.quantity
+                 })
+                });
+            }
+
           res(count);
+        });
+    },
+    getCartCount: (userId) => {
+        return new Promise(async(res,rej) => {  
+          let count = 0;
+          let cart;
+          try {
+            cart = await db.get().collection(collections.CART_COLLECTION)
+              .find({user: ObjectId(userId)})
+              .toArray();
+          } catch (error) {
+            console.error(error);
+            return rej(error);
+          }
+          //console.log(cart[0].products)
+        
+        if (Array.isArray(cart)) {
+            cart.forEach((item) => {
+                count += item.products.length
+            });
+        }
+
+        res(count);
         });
     },
     changeProductQuantity: (details) => {
@@ -199,6 +224,20 @@ module.exports = {
                     res(true)
                 })
             }  
+        })
+    },
+    deleteProduct: (details) => {
+        console.log(details)
+        return new Promise((res,rej) => {
+            db.get().collection(collections.CART_COLLECTION)
+            .updateOne({_id: ObjectId(details.cart)},
+            {
+                $pull:{products:{item: ObjectId(details.product)}}
+            }
+            ).then((response) => {
+                //console.log(response)
+                res({removeStatus: true})
+            })
         })
     }
       

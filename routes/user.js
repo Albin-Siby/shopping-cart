@@ -15,14 +15,16 @@ const verifyLogin = (req,res,next) => {
 router.get('/', async function(req, res, next) {
   let user = req.session.user
   //console.log(user)
-  let cartCount = null
+  let productCount = null
+  let usercart
+  
   if(req.session.user) {
-    cartCount =await userHelper.getCartCount(req.session.user._id)
+    productCount =await userHelper.getCartProductCount(req.session.user._id)
     
   }
 
   productHelper.getAllProducts().then((products) => {
-    res.render('./user/view-products', { products, user, cartCount });
+    res.render('./user/view-products', { products, user, productCount, usercart: false });
   })
 
 });
@@ -68,9 +70,18 @@ router.get('/logout', (req,res) => {
 })
 
 router.get('/cart',verifyLogin, async(req,res) => {
+  let user = req.session.user
+  let cartCount = null
+  let usercart
+  
+  if(req.session.user) {
+    cartCount =await userHelper.getCartCount(req.session.user._id)
+    
+  }
+
   let products = await userHelper.getCartProducts(req.session.user._id)
-    console.log(products)
-    res.render('user/cart', { products, user:req.session.user })
+    //console.log(products)
+    res.render('user/cart', { products, user:req.session.user, cartCount, usercart:true })
     
 })
 
@@ -85,6 +96,12 @@ router.get('/add-to-cart/:id', (req,res) => {
 router.post("/change-product-quantity", (req,res,next) => {
   //console.log(req.body)
   userHelper.changeProductQuantity(req.body).then((response) => {
+    res.json(response)
+  })
+})
+
+router.delete('/delete-cart-product', (req,res,next) => {
+  userHelper.deleteProduct(req.body).then((response) => {
     res.json(response)
   })
 })
