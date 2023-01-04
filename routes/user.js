@@ -106,4 +106,8 @@ router.delete('/delete-cart-product', (req,res,next) => {
   })
 })
 
+router.get("/checkout",verifyLogin, (req,res) => {
+  res.render("user/checkout",{user:req.session.user})
+})
+
 module.exports = router;
