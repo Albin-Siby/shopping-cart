@@ -81,7 +81,8 @@ router.get('/cart',verifyLogin, async(req,res) => {
 
   let products = await userHelper.getCartProducts(req.session.user._id)
     //console.log(products)
-    res.render('user/cart', { products, user:req.session.user, cartCount, usercart:true })
+  let total = await userHelper.getTotalAmount(req.session.user._id)
+    res.render('user/cart', { products, total, user:req.session.user, cartCount, usercart:true })
     
 })
 
@@ -106,8 +107,9 @@ router.delete('/delete-cart-product', (req,res,next) => {
   })
 })
 
-router.get("/checkout",verifyLogin, (req,res) => {
-  res.render("user/checkout",{user:req.session.user})
+router.get("/checkout",verifyLogin, async(req,res) => {
+  let total = await userHelper.getTotalAmount(req.session.user._id)
+    res.render("user/checkout",{user:req.session.user, total})
 })
 
 module.exports = router;
