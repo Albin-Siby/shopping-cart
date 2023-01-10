@@ -33,6 +33,10 @@ module.exports = {
     },
     updateProduct: (proId, proDetails) => {
         return new Promise((res,rej) => {
+            if(!db) {
+                return rej(new Error('Database not initialized'))
+            }
+
             db.get().collection(collections.PRODUCT_COLLECTION)
             .updateOne({_id: ObjectId(proId)},{
                 $set:{
@@ -43,7 +47,10 @@ module.exports = {
                 }
             }).then((respond) => {
                 res()
+            }).catch((error) => {
+                rej(error)
             })
         })
     }
+    
 }

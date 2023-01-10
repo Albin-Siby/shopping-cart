@@ -135,7 +135,7 @@ module.exports = {
                 //     }
                 // }
             ]).toArray()
-            console.log(cartItems)
+            //console.log(cartItems)
             res(cartItems)
            
         })
@@ -232,7 +232,7 @@ module.exports = {
                     }
                 ).then((response)=>{
                     //console.log(response)
-                    res(true)
+                    res({status:true})
                 })
             }  
         })
@@ -289,6 +289,39 @@ module.exports = {
             res(total[0].total)
            
         })
+    },
+    addAddress: (address) => {
+        const addrObj = {
+            user: ObjectId(address.userId),
+            fname: address.Fname,
+            lname: address.Lname,
+            address: address.Address,
+            town: address.Town,
+            state: address.State,
+            country: address.Country,
+            pin: address.PinCode,
+            phone: address.Phone,
+            email: address.Email
+        }
+        //console.log(addrObj)
+        return new Promise((res,rej) => {
+            try{
+                db.get().collection(collections.ADDRESS_COLLECTION).insertOne(addrObj).then((data) => {
+                    //console.log(data)
+                    res(data)
+                })
+            }catch(error) {
+                console.log(error)
+                rej(error)
+            }
+            
+        })
+    },
+    getAddress: () => {
+        return new Promise(async(res,rej) => {
+            let allAddress = await db.get().collection(collections.ADDRESS_COLLECTION).find().toArray()
+            res(allAddress)
+    })
     }
       
 }

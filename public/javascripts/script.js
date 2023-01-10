@@ -1,3 +1,5 @@
+// Ajax ......
+
 function addToCart(proId) {
     $.ajax({
         url:"/add-to-cart/"+proId,
@@ -13,7 +15,7 @@ function addToCart(proId) {
     });
 }
 
-function changeQuantity(cartId,proId,count) {
+function changeQuantity(cartId,proId,userId,count) {
     count = parseInt(count)
     let quantity = parseInt(document.getElementById(proId).innerHTML)
     $.ajax({
@@ -21,6 +23,7 @@ function changeQuantity(cartId,proId,count) {
         data:{
             cart:cartId,
             product:proId,
+            user:userId,
             count:count,
             quantity:quantity
         },
@@ -30,6 +33,8 @@ function changeQuantity(cartId,proId,count) {
                alert("Maximum limit reached")
             } else {
                  document.getElementById(proId).innerHTML = quantity+count
+                 document.getElementById('total').innerHTML = response.total
+                 document.getElementById('subtotal').innerHTML = response.total
             }
         }
     })

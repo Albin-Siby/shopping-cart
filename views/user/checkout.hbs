@@ -1,30 +1,91 @@
+<style>
+    .btn:hover{
+        color: black;
+        background-color: white;
+    }
+    .badge{
+        position: relative;
+    }
+    #b1:after{
+        content: "";
+        display: block;
+        width: 250px;
+        height: 2px;
+        background-color: rgb(40, 84, 231);
+        position: absolute;
+        top: 10px;
+        left:24px;
+    }
+    #b2:after{
+        content: "";
+        display: block;
+        width: 250px;
+        height: 2px;
+        background-color: grey;
+        position: absolute;
+        top: 10px;
+        left:22px;
+    }
+</style>
+
 <section>
     {{#if user}}
-    <div class="container mt-5">
-        <form action="">
+
+    <div class="container mt-3" style="width: 100%;height:80px;background-color:white;">
+        <div style="display: flex;">
+        <span class="badge bg-primary mt-4 p-1" style="border-radius: 400px;margin-left:250px;" id="b1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+            <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg>
+        </span>
+        <span class="badge bg-primary mt-4" style="border-radius: 400px;margin-left:250px;" id="b2">2</span>
+        <span class="badge bg-secondary mt-4" style="border-radius: 400px;margin-left:250px;" id="b3">3</span>
+        </div>
+        <div style="display: flex;">
+            <h6 style="margin-left: 230px;">Address</h6>
+            <h6 style="margin-left: 205px;">Order Placing</h6>
+            <h6 style="margin-left: 190px;">Payment</h6>
+        </div>
+    </div>
+
+    <div class="container mt-3" style="background-color: white;">
         <div class="row">    
-            <div class="col-md-6">
-                <h3>Enter Delivery Details</h3>
-                    <div class="form-group mt-5">
-                        <label for=""><strong> Address</strong></label>
-                        <input class="form-control p-3" type="text" placeholder="Enter address here" required>
+            <div class="col-md-8">
+                <h2 class="m-5">Delivery Details</h2>
+                <div class="card">
+                    <div class="card-body">
+                        This is some text within a card body.
                     </div>
-                    <div class="form-group mt-3">
-                        <label for=""><strong> Pincode</strong></label>
-                        <input class="form-control" type="tel" placeholder="Enter pincode here" required>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label for=""><strong> Mobile</strong></label>
-                        <input class="form-control" type="tel" placeholder="Enter mobile number here">
-                    </div>
+            </div>  
+                
             </div>
-            </form>
             <div class="col-md-4 mt-5">
-                <div class="container p-5" style="border: 2px solid gray;background-color:white;">
-                    <h5 class="mt-3">Total Amount <span class="float-end" style="margin-right: 20px;">{{total}}</span></h5>
+                <div class="container p-3 mb-3" style="border: 1px dashed black;background-color:rgb(122, 170, 120);">
+                    <h3 class="mt-1" style="color: blue;">Your Order</h3>
+                    <hr class="mt-3" style="height: 2px;background-color:rgb(12, 12, 12);">
+
+                    <table class="table mt-5">
+                        <thead>
+                            <tr style="color: rgb(99, 94, 94);">
+                                <th scope="col">Product</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="align-middle">
+                            {{#each products}}
+                            <tr>
+                                <td  class="p-3">{{this.product.Name}}</td>
+                                <td  class="p-3">{{this.quantity}}</td>
+                                <td  class="p-3">{{this.total}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+                    <h4 class="mt-5">Subtotal <span class="float-end" style="margin-right: 20px;">{{total}}</span></h4>
                     <hr class="mt-3" style="height: 2px;background-color:black;">
                     <div class="payment">
-                        <h4 class="mt-5">Payment Method</h4>
+                        <h4 class="m-5 mb-2">Payment Method</h4>
                         <label class="radio-inline mt-3">
                             <input type="radio" name="payment-method" value="COD" checked> COD
                         </label><br>
@@ -32,6 +93,8 @@
                             <input type="radio" name="payment-method" value="ONLINE"> Online Payment
                         </label>
                     </div>
+                    <hr class="m-4">
+                    <button class="btn btn-dark m-2  mx-auto d-grid" style="width: 270px;padding: 5px;">Place Order</button>
                 </div>
             </div>    
         </div>
