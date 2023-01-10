@@ -120,17 +120,15 @@
                 <div class="container">
                     {{#each allAddress}}
                         <label class="card mt-3 p-3">
-                        <input name="plan" class="radio" type="radio" data-id="{{this._id}}" checked>
+                        <input name="plan" class="radio selected" type="radio" data-id="{{this._id}}">
                             <span>{{this.fname}}  &nbsp; {{this.lname}}</span> 
                             <span>{{this.address}}, &nbsp;{{this.town}}, &nbsp;{{this.state}},&nbsp;{{this.country}}</span>
                             <span>{{this.pin}}</span>
                             <span>{{this.phone}}</span>
                             <span>{{this.email}}</span>
-                        </label>
+                            <a href="/checkout/{{this._id}}" class="btn btn-primary mt-3 float-end" style="display: none;width: 90px;margin-left:350px" id="btn-{{this._id}}">Next</a>
+                        </label>    
                     {{/each}} 
-                    <div class="mt-5 float-end">
-                        <a href="/checkout" class="btn btn-primary">Next</a>
-                    </div>
                 </div>   
             </div>
             {{/if}}
@@ -138,3 +136,27 @@
     </div>
 
 </section>
+
+<script>
+
+const radios = document.querySelectorAll('.radio');
+
+radios.forEach(radio => radio.addEventListener('change', handleRadioChange));
+
+function handleRadioChange() {
+    var nextBtnId = 'btn-' + this.dataset.id;
+    var nextBtn = document.getElementById(nextBtnId);
+    var prevBtn = document.getElementsByClassName('float-end');
+    if (this.checked) {
+        if (nextBtn) {
+            nextBtn.style.display = 'block';
+        }
+        for (var i = 0; i < prevBtn.length; i++) {
+            if (prevBtn[i].id !== nextBtnId) {
+                prevBtn[i].style.display = 'none';
+            }
+        }
+    } 
+}
+
+</script>

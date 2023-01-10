@@ -115,9 +115,10 @@ router.delete('/delete-cart-product', (req,res,next) => {
   })
 })
 
-router.get("/checkout",verifyLogin, async(req,res) => {
+router.get("/checkout/:id",verifyLogin, async(req,res) => {
   let cartCount = null
   let usercart
+  let addressId = req.params.id;
  
   if(req.session.user) {
     cartCount =await userHelper.getCartCount(req.session.user._id)
@@ -125,8 +126,9 @@ router.get("/checkout",verifyLogin, async(req,res) => {
   }
   let products = await userHelper.getCartProducts(req.session.user._id)
   //console.log(products)
+  let selectedAddress = await userHelper.getOneAddress(addressId)
   let total = await userHelper.getTotalAmount(req.session.user._id)
-    res.render("user/checkout",{user:req.session.user, total, cartCount, products, usercart: true})
+    res.render("user/checkout",{user:req.session.user, total, cartCount, products, usercart: true, selectedAddress})
 })
 
 router.get('/add-address',verifyLogin, async(req,res) => {

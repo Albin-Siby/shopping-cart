@@ -322,6 +322,13 @@ module.exports = {
             let allAddress = await db.get().collection(collections.ADDRESS_COLLECTION).find().toArray()
             res(allAddress)
     })
+    },
+    getOneAddress: (addressId) => {
+        return new Promise((res,rej) => {
+            db.get().collection(collections.ADDRESS_COLLECTION).findOne({_id: ObjectId(addressId)}).then((address) => {
+                res(address)
+            })
+        })
     }
       
 }
