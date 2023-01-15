@@ -18,12 +18,26 @@ router.get('/add-products', (req,res) => {
 
 router.post('/add-products',fileUpload(), (req,res) => {
   // console.log(req.body)
-  // console.log(req.files.image)
+  //console.log(req.files.image)
 
   productHelper.addProduct(req.body, (id) => {
     console.log(id)
     let image = req.files.image
-    image.mv('./public/product-images/'+id+".jpg", (err) => {
+    let image2 = req.files.image2
+    let image3 = req.files.image3
+    image.mv('./public/product-images/'+id+"_1.jpg", (err) => {
+      if(err) {
+        console.log(err)
+      }
+    })
+
+    image2.mv('./public/product-images/'+id+"_2.jpg", (err) => {
+      if(err) {
+        console.log(err)
+      }
+    })
+
+    image3.mv('./public/product-images/'+id+"_3.jpg", (err) => {
       if(!err) {
         res.render('admin/add-products', {admin: true})
       } else {

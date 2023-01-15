@@ -20,7 +20,7 @@ app.engine('hbs', hbs.engine({extname: 'hbs',defaultLayout: 'layout',layoutsDir:
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: "key", resave: true, saveUninitialized: true, cookie: {maxAge: 300000}}))

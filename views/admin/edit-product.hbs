@@ -20,22 +20,32 @@
                     <label for=""><strong>Price</strong></label>
                     <input type="text" name="Price" class="form-control" value="{{product.Price}}">
                 </div>
+
+                <div class="form-group mt-3">
+                        <label for=""><strong>Offer Price(Optional)</strong></label>
+                        <input type="text" name="OfferPrice" class="form-control" value="{{product.OfferPrice}}">
+                    </div>
                      
                 <div class="form-group mt-3">
                     <label for=""><strong>Description</strong></label>
                     <input type="text" name="Description" class="form-control" value="{{product.Description}}">
                 </div>
+
+                <div class="form-group mt-3">
+                    <label for=""><strong>Total Stock</strong></label>
+                    <input type="text" name="Stock" class="form-control" value="{{product.Stock}}">
+                </div>
                     
                 <div class="form-group mt-3">
                     <label for=""><strong>Image</strong></label>
-                    <img src="/product-images/{{product._id}}.jpg" alt="" style="width: 70px;height:50px;" id="imgView"> 
+                    <img src="/product-images/{{product._id}}_1.jpg" alt="" style="width: 70px;height:50px;" id="imgView"> 
                     <div class="p-3">
                         <input name="image" type="file" class="form-control" onchange="viewImage(event)" required>
                     </div>
                 </div>
                      
-                <div class="form-group mt-3 float-end">
-                    <button type="submit" class="btn btn-success mt-4">Update</button>
+                <div class="form-group m-3 float-end">
+                    <button type="submit" class="btn btn-success">Update</button>
                 </div>
                     
                 </form>

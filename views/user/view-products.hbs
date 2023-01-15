@@ -57,19 +57,18 @@
         background-color: white;
         color: black;
     }
-    
 </style>
 
     <section>
         <hr style="height:3px;background-color:black;margin:40px">
         <div class="container mt-5">
-            <h2 class="heading"><u>All Products</u></h2>
+            <h2 class="heading"><u>Products</u></h2>
             <div class="row">
-
-                {{#each products}}
+                
+                {{#each normalProducts}}
                     <div class="col-md-2 p-3">
                         <div class="card" style="width: 11rem;height: 300px;">
-                            <img style="width: 100%;height: 50%;" src="/product-images/{{this._id}}.jpg" class="image card-img-top p-1 pb-1" alt="" id="image">
+                            <img style="width: 100%;height: 50%;" src="/product-images/{{this._id}}_1.jpg" class="image card-img-top p-1 pb-1" alt="" id="image">
                             <div class="card-body">
                                 <div>
                                     <h5 class="card-title" id="card-name">{{this.Name}}</h5>
@@ -97,7 +96,7 @@
                         </div>
                     </div>
                 {{/each}}
-            
+               
             </div>
         </div>
         <hr style="height:3px;background-color:black;margin:40px">
@@ -105,10 +104,40 @@
             <h2 class="heading"><u>Offer Products</u></h2>
             <div class="row">
 
-            {{#each products}}
+            {{#each offerProducts}}
                 <div class="col-md-2 p-3">
-                    <div class="card" style="width: 11rem;height: 300px;">
+                    <div class="card" style="width: 11rem;height: 350px;">
+                        <img style="width: 80%;height: 50%;margin-left:20px" src="/product-images/{{this._id}}_1.jpg" class="image card-img-top p-1 pb-1" alt="" id="image">
+                            <div class="card-body">
+                                <div>
+                                    <h5 class="card-title" id="card-name">{{this.Name}}</h5>
+                                    {{!-- <p class="card-text" style="color: rgb(99, 98, 98);">{{this.Description}}</p> --}}
+                                    <h5 class="card-title mt-3" id="card-price">Rs: {{this.OfferPrice}}</h5>
+                                    <h6>
+                                        <del>
+                                            <span style="color: red;">Rs: {{this.Price}}</span>
+                                        </del>
+                                    </h6>
 
+                                </div>
+                                <div class="ratings">
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star-half-alt"></i>
+                                    <span class="rating-text">(99)</span>
+                                </div>
+                                <div>
+                                    {{!-- <a href="/add-to-cart/{{this._id}}" class="btn btn-primary" id="btn1">Add to cart</a> --}}
+                                    <button  onclick="addToCart('{{this._id}}')" class="btn btn-dark" id="cart-button" style="width: 48%;">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                    <a href="/show-product/{{this._id}}" title="View product"><button class="btn btn-dark" id="view-button" style="width: 50%;">
+                                        <i class="fas fa-eye"> View</i>
+                                    </button></a>
+                                </div>
+                            </div>
                     </div>
                 </div>
             {{/each}}
@@ -117,4 +146,3 @@
         </div>
         <hr style="height:3px;background-color:black;margin:40px">
     </section>
-

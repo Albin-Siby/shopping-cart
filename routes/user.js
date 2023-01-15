@@ -24,7 +24,17 @@ router.get('/', async function(req, res, next) {
   }
 
   productHelper.getAllProducts().then((products) => {
-    res.render('./user/view-products', { products, user, productCount, usercart: false });
+    let offerProducts = [];
+    let normalProducts = [];
+    products.forEach(product => {
+      if(product.OfferPrice === '') {
+        normalProducts.push(product);
+      } else {
+        offerProducts.push(product);
+      }
+    });
+    console.log(offerProducts)
+    res.render('./user/view-products', { normalProducts, offerProducts, user, productCount, usercart: false });
   })
 
 });
@@ -87,7 +97,7 @@ router.get('/cart',verifyLogin, async(req,res) => {
 
   let products = await userHelper.getCartProducts(req.session.user._id)
     //console.log(products)
-    let total = await userHelper.getTotalAmount(req.session.user._id)
+    let total = await userHelper.getTotalAmount(req.session.user._id,products)
       res.render('user/cart', { products, total, user:req.session.user, cartCount, usercart:true })
   
 })
@@ -115,10 +125,9 @@ router.delete('/delete-cart-product', (req,res,next) => {
   })
 })
 
-router.get("/checkout/:id",verifyLogin, async(req,res) => {
+router.get("/checkout",verifyLogin, async(req,res) => {
   let cartCount = null
   let usercart
-  let addressId = req.params.id;
  
   if(req.session.user) {
     cartCount =await userHelper.getCartCount(req.session.user._id)
@@ -126,9 +135,13 @@ router.get("/checkout/:id",verifyLogin, async(req,res) => {
   }
   let products = await userHelper.getCartProducts(req.session.user._id)
   //console.log(products)
-  let selectedAddress = await userHelper.getOneAddress(addressId)
+  // let selectedAddress = await userHelper.getOneAddress(addressId)
   let total = await userHelper.getTotalAmount(req.session.user._id)
-    res.render("user/checkout",{user:req.session.user, total, cartCount, products, usercart: true, selectedAddress})
+  userHelper.getAddress().then((allAddress) => {
+    //console.log(allAddress)
+    res.render("user/checkout",{user:req.session.user, total, cartCount, products, usercart: true, allAddress})
+  })
+    
 })
 
 router.get('/add-address',verifyLogin, async(req,res) => {
@@ -140,17 +153,32 @@ router.get('/add-address',verifyLogin, async(req,res) => {
     cartCount =await userHelper.getCartCount(req.session.user._id)
     
   }
-  userHelper.getAddress().then((allAddress) => {
-    //console.log(allAddress)
-    res.render('user/add-address',{ user:req.session.user, cartCount, usercart: true, allAddress})
-  })
+  let products = await userHelper.getCartProducts(req.session.user._id)
+  let total = await userHelper.getTotalAmount(req.session.user._id)
+ 
+  res.render('user/add-address',{ user:req.session.user, products, total, cartCount, usercart: true,})
   
 })
 
 router.post('/add-address', (req,res) => {
   //console.log(req.body)
   userHelper.addAddress(req.body).then((response) => {
-    res.redirect('/add-address')
+    res.redirect('/checkout')
+  })
+})
+
+router.post('/checkout',verifyLogin, async(req, res) => {
+  const selectedAddressId = req.body["selected-address"][0];
+  const paymentMethod = req.body["payment-method"]
+  //console.log(selectedAddressId,paymentMethod)
+
+  let selectedAddress = await userHelper.getOneAddress(selectedAddressId)
+  let total = await userHelper.getTotalAmount(req.session.user._id)
+  let cart = await userHelper.getCartProductList(req.session.user._id)
+  let products = cart.products
+  // console.log(products)
+  userHelper.placeOrder(paymentMethod,selectedAddress,total,products,req.session.user._id).then((response) => {
+    res.json({status: true})
   })
 })
 
