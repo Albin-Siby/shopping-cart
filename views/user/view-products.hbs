@@ -65,6 +65,7 @@
             <h2 class="heading"><u>Products</u></h2>
             <div class="row">
                 
+                <div class="owl-carousel owl-theme">
                 {{#each normalProducts}}
                     <div class="col-md-2 p-3">
                         <div class="card" style="width: 11rem;height: 300px;">
@@ -96,6 +97,7 @@
                         </div>
                     </div>
                 {{/each}}
+                </div>
                
             </div>
         </div>
@@ -104,6 +106,7 @@
             <h2 class="heading"><u>Offer Products</u></h2>
             <div class="row">
 
+            <div class="owl-carousel owl-theme">
             {{#each offerProducts}}
                 <div class="col-md-2 p-3">
                     <div class="card" style="width: 11rem;height: 350px;">
@@ -141,8 +144,33 @@
                     </div>
                 </div>
             {{/each}}
+            </div>
 
             </div>
         </div>
         <hr style="height:3px;background-color:black;margin:40px">
     </section>
+
+    <script>
+        $('.owl-carousel').owlCarousel({
+            dots:false,
+            loop:true,
+            margin:10,
+            autoplay:true,
+            autoplayHoverPause:true,
+            autoplayTimeout:3000,
+            nav:true,
+            navText : ['<i class="fa fa-angle-left" aria-hidden="true"></i>','<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+            responsive:{
+                0:{
+                    items:1
+                },
+                600:{
+                    items:3
+                 },
+                 1200:{
+                    items:5
+                 }
+            }
+        })
+    </script>

@@ -40,7 +40,7 @@ router.get('/', async function(req, res, next) {
 });
 
 router.get('/show-product/:id', async(req,res) => {
-  let proId = req.params.id
+  let proId = req.params.id                                
   let oneProduct =await productHelper.getProductDetails(proId)
   console.log(oneProduct)
   res.render('user/show-product', { oneProduct, admin: false })
@@ -97,8 +97,12 @@ router.get('/cart',verifyLogin, async(req,res) => {
 
   let products = await userHelper.getCartProducts(req.session.user._id)
     //console.log(products)
-    let total = await userHelper.getTotalAmount(req.session.user._id,products)
+    if(products && products.length > 0){
+      let total = await userHelper.getTotalAmount(req.session.user._id,products)
       res.render('user/cart', { products, total, user:req.session.user, cartCount, usercart:true })
+    } else {
+      res.render('user/cart', { products, user:req.session.user, cartCount, usercart:true })
+    }
   
 })
 

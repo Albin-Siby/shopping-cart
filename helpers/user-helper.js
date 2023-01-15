@@ -251,10 +251,8 @@ module.exports = {
             })
         })
     },
-    getTotalAmount: (userId,products) => {
-        
+    getTotalAmount: (userId,products) => {    
         return new Promise(async(res,rej) => {
-            if(products && products.length > 0){
             let total = await db.get().collection(collections.CART_COLLECTION).aggregate([
                 {
                     $match:{user: ObjectId(userId)}
@@ -288,11 +286,7 @@ module.exports = {
                 }
             ]).toArray()
             //console.log(total)
-                res(total[0].total)
-
-        } else {
-            res(0)
-        }  
+                res(total[0].total) 
         })
     },
     addAddress: (address) => {
