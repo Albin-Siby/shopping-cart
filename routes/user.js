@@ -27,13 +27,13 @@ router.get('/', async function(req, res, next) {
     let offerProducts = [];
     let normalProducts = [];
     products.forEach(product => {
-      if(product.OfferPrice === '') {
+      if(product.OfferPrice === '0' ) {
         normalProducts.push(product);
       } else {
         offerProducts.push(product);
       }
     });
-    console.log(offerProducts)
+    //console.log(offerProducts)
     res.render('./user/view-products', { normalProducts, offerProducts, user, productCount, usercart: false });
   })
 
@@ -42,7 +42,10 @@ router.get('/', async function(req, res, next) {
 router.get('/show-product/:id', async(req,res) => {
   let proId = req.params.id                                
   let oneProduct =await productHelper.getProductDetails(proId)
-  console.log(oneProduct)
+  if(oneProduct.OfferPrice === '0') {
+    oneProduct.OfferPrice = ''
+  }  
+  //console.log(oneProduct)
   res.render('user/show-product', { oneProduct, admin: false })
 })
 
@@ -96,6 +99,11 @@ router.get('/cart',verifyLogin, async(req,res) => {
   }
 
   let products = await userHelper.getCartProducts(req.session.user._id)
+  for (let i = 0; i < products.length; i++) {
+    if (products[i].product.OfferPrice === '0') {
+      products[i].product.OfferPrice = '';
+    }
+  }
     //console.log(products)
     if(products && products.length > 0){
       let total = await userHelper.getTotalAmount(req.session.user._id,products)
@@ -118,7 +126,9 @@ router.get('/add-to-cart/:id', (req,res) => {
 router.post("/change-product-quantity", (req,res,next) => {
   //console.log(req.body)
   userHelper.changeProductQuantity(req.body).then(async(response) => {
-    response.total = await userHelper.getTotalAmount(req.body.user) 
+    response.subtotal = await userHelper.getTotalAmount(req.body.user)
+    response.total = await userHelper.getCartProducts(req.body.user) 
+    //console.log(response.total)
     res.json(response)
   })
 })
@@ -184,6 +194,12 @@ router.post('/checkout',verifyLogin, async(req, res) => {
   userHelper.placeOrder(paymentMethod,selectedAddress,total,products,req.session.user._id).then((response) => {
     res.json({status: true})
   })
+})
+
+router.get('/orderplaced',verifyLogin, async(req,res) => {
+  let user = req.session.user
+
+  res.render('user/orderplaced', { user })
 })
 
 module.exports = router;

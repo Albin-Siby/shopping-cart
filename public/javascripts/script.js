@@ -33,8 +33,28 @@ function changeQuantity(cartId,proId,userId,count) {
                alert("Maximum limit reached")
             } else {
                  document.getElementById(proId).innerHTML = quantity+count
-                 document.getElementById('total').innerHTML = response.total
-                 document.getElementById('subtotal').innerHTML = response.total
+                 document.getElementById('subtotal').innerHTML = response.subtotal
+                 document.getElementById('subtotal1').innerHTML = response.subtotal
+
+                let productTotal;
+                for (let i = 0; i < response.total.length; i++) {
+                    if (response.total[i].item == proId) {
+                        
+                        if(response.total[i].offerTotal != '') {
+                            productTotal = response.total[i].offerTotal;
+                            break;
+                        } else {
+                            productTotal = response.total[i].total;
+                            break;
+                        }
+                         
+                    }
+                }
+                 
+                 if (productTotal) {
+                     document.getElementById('total-price-' + proId).innerHTML = productTotal;
+                 }
+                 
             }
         }
     })

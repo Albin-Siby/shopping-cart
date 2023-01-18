@@ -108,12 +108,26 @@ module.exports = {
                 {
                     $project:{
                         item:1,quantity:1,product:1,
-                        total: {$sum:{$multiply:[{ $toInt: '$quantity' },{ $toInt: '$product.Price' }]}}
+                        total: {
+                            $cond: {
+                              if: { $ne: ['$product.OfferPrice', '0'] },
+                            //   then: { $sum: { $multiply: [{ $toInt: '$quantity' }, { $toInt: '$product.OfferPrice' }] } },
+                                then: "",
+                              else: { $sum: { $multiply: [{ $toInt: '$quantity' }, { $toInt: '$product.Price' }] } }
+                            }
+                          },
+                          offerTotal: {
+                            $cond: {
+                              if: { $ne: ['$product.OfferPrice', '0'] },
+                              then: { $sum: { $multiply: [{ $toInt: '$quantity' }, { $toInt: '$product.OfferPrice' }] } },
+                              else: ""
+                            }
+                        }
                     }
                 },
                 {
                     $project:{
-                        item:1,quantity:1,product:1,total:1
+                        item:1,quantity:1,product:1,total:1,offerTotal:1
                     }
                 }
                 // {
@@ -280,10 +294,20 @@ module.exports = {
                     }
                 },
                 {
-                    $group: { _id: null,
-                        total: {$sum:{$multiply:[{ $toInt: '$quantity' },{ $toInt: '$product.Price' }]}}
+                    $group: { 
+                        _id: null,
+                        total: {
+                            $sum: {
+                                $cond: {
+                                    if: { $ne: ['$product.OfferPrice', '0'] },
+                                    then: { $multiply: [{ $toInt: '$quantity' }, { $toInt: '$product.OfferPrice' }] },
+                                    else: { $multiply: [{ $toInt: '$quantity' }, { $toInt: '$product.Price' }] }
+                                }
+                            }
+                        }
                     }
-                }
+                },
+                
             ]).toArray()
             //console.log(total)
                 res(total[0].total) 

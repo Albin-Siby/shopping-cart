@@ -71,7 +71,7 @@
                     {{#each allAddress}}
                         <label class="card mt-3 p-3">
                         <input name="plan" class="radio selected" type="radio" data-id="{{this._id}}">
-                        <input type="hidden" name="selected-address" value="">
+                        <input type="hidden" name="selected-address" value="" id="selectedAddress">
                             <span>{{this.fname}}  &nbsp; {{this.lname}}</span> 
                             <span>{{this.address}}, &nbsp;{{this.town}}, &nbsp;{{this.state}},&nbsp;{{this.country}}</span>
                             <span>{{this.pin}}</span>
@@ -100,7 +100,11 @@
                             <tr>
                                 <td  class="p-3">{{this.product.Name}}</td>
                                 <td  class="p-3">{{this.quantity}}</td>
+                                {{#if this.offerTotal}}
+                                <td  class="p-3">{{this.offerTotal}}</td>
+                                {{else}}
                                 <td  class="p-3">{{this.total}}</td>
+                                {{/if}}
                             </tr>
                             {{/each}}
                         </tbody>
@@ -130,6 +134,7 @@
 <script>
 
     const radioButtons = document.querySelectorAll('.radio');
+    const selectAddress = document.getElementById('selectedAddress')
     
     radioButtons.forEach(button => {
         button.addEventListener('change', (event) => {
@@ -140,13 +145,20 @@
 
     $('#checkout-form').submit((e)=> {
         e.preventDefault()
-        $.ajax({
-            url: '/checkout',
-            method: 'post',
-            data: $('#checkout-form').serialize(),
-            success: (response) => {
-                alert(response.status)
-            }
-        })
+        if(selectAddress.value === '') {
+            alert('Please select an address before placing your order.')
+        } else {
+            $.ajax({
+                url: '/checkout',
+                method: 'post',
+                data: $('#checkout-form').serialize(),
+                success: (response) => {
+                    //alert(response)
+                    if(response.status) {
+                        location.href = "/orderplaced"
+                    }
+                }
+            })
+        }
     })
 </script>

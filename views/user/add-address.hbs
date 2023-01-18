@@ -125,7 +125,11 @@
                             <tr>
                                 <td  class="p-3">{{this.product.Name}}</td>
                                 <td  class="p-3">{{this.quantity}}</td>
+                                {{#if this.offerTotal}}
+                                <td  class="p-3">{{this.offerTotal}}</td>
+                                {{else}}
                                 <td  class="p-3">{{this.total}}</td>
+                                {{/if}}
                             </tr>
                             {{/each}}
                         </tbody>
