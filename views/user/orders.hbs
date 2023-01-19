@@ -1,0 +1,73 @@
+<style>
+  tbody tr:nth-child(n+6) {
+    display: none;
+  }
+  #less{
+    display: none;
+  }
+  #show {
+    display: none;
+  }
+</style>
+
+<section>
+    <div class="container">
+         <table class="table mt-5">
+        <thead>
+          <tr>
+            <th scope="col">Order</th>
+            <th scope="col">Date</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Payment</th>
+            <th scope="col">Status</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+            {{#each orders}}
+          <tr>
+            <td class="p-3">#order{{this._id}}</td>
+            <td class="p-3">{{this.date}}</td>
+            <td class="p-3">{{this.total}}</td>
+            <td class="p-3">{{this.paymentMethod}}</td>
+            <td class="p-3">{{this.status}}</td>
+            <td class="p-3"><a href="/orderedProducts/{{this._id}}" class="btn btn-success p-2">View Products</a></td>
+          </tr>
+          {{/each}}
+        </tbody>
+        </table>
+        {{#if orders}}
+        <button type="button" class="btn btn-primary" id="show" style="margin-left: 450px;margin-bottom: 50px;">Show More</button>
+        <button type="button" class="btn btn-primary" id="less" style="margin-left: 450px;margin-bottom: 50px;">Show Less</button>
+        {{/if}}
+    </div>
+</section>
+
+<script>
+
+    window.onload = function() {
+  var tableRows = document.querySelectorAll("tbody tr");
+  if(tableRows.length > 5) {
+    document.getElementById("show").style.display = "block"
+  }
+}
+    
+  document.getElementById("show").addEventListener("click", function(){
+    var tableRows = document.querySelectorAll("tbody tr:nth-child(n+5)");
+    for(var i = 0; i < tableRows.length; i++) {
+      tableRows[i].style.display = "table-row";
+    }
+    document.getElementById("show").style.display = "none";
+    document.getElementById("less").style.display = "block";
+  });
+
+  document.getElementById("less").addEventListener("click", function(){
+    var tableRows = document.querySelectorAll("tbody tr:nth-child(n+6)");
+    for(var i = 0; i < tableRows.length; i++) {
+      tableRows[i].style.display = "none";
+    }
+    document.getElementById("show").style.display = "block";
+    document.getElementById("less").style.display = "none";
+  });
+
+</script>

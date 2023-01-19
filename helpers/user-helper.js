@@ -375,18 +375,69 @@ module.exports = {
                     phone: address.phone,
                     email: address.email
                 },
-                userId: address.user,
+                userId: userId,
                 paymentMethod: pMethod,
                 products: products,
                 total: total,
                 status: status,
-                date: new Date()
+                date: new Date().toLocaleDateString('en-IN', {day: '2-digit', month: '2-digit', year: 'numeric'})
             }
 
             db.get().collection(collections.ORDER_COLLECTION).insertOne(ordObj).then((response) => {
                 db.get().collection(collections.CART_COLLECTION).deleteOne({user: ObjectId(userId)})
                 res()
             })
+        })
+    },
+    getUserOrder: (userId) => {
+        //console.log(userId)
+        return new Promise(async(res,rej) => {
+            let orders = await db.get().collection(collections.ORDER_COLLECTION).find({userId: userId}).toArray()
+            //console.log(orders)
+            res(orders)
+        })
+    },
+    getOrderProducts: (orderId) => {
+        return new Promise(async(res,rej) => {
+            let orderItems = await db.get().collection(collections.ORDER_COLLECTION).aggregate([
+                {
+                    $match:{_id: ObjectId(orderId)}
+                },
+                {
+                    $project:{
+                        products: 1,
+                        status: 1
+                    }
+                },
+                {
+                    $unwind:'$products'
+                },
+                {
+                    $project:{
+                        item: '$products.item',
+                        quantity: '$products.quantity',
+                         status: "$status",
+                    }
+                },
+                {
+                    $lookup:{
+                        from: collections.PRODUCT_COLLECTION,
+                        localField: 'item',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                {
+                    $project:{
+                        item:1,
+                        quantity:1,
+                        product:{$arrayElemAt:["$product",0]},
+                        status: "$status",
+                    }
+                }
+            ]).toArray()
+            console.log(orderItems)
+            res(orderItems)
         })
     }
       

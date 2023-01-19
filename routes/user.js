@@ -161,8 +161,7 @@ router.get("/checkout",verifyLogin, async(req,res) => {
 router.get('/add-address',verifyLogin, async(req,res) => {
   let cartCount = null
   let usercart
-  
-  
+    
   if(req.session.user) {
     cartCount =await userHelper.getCartCount(req.session.user._id)
     
@@ -190,7 +189,7 @@ router.post('/checkout',verifyLogin, async(req, res) => {
   let total = await userHelper.getTotalAmount(req.session.user._id)
   let cart = await userHelper.getCartProductList(req.session.user._id)
   let products = cart.products
-  // console.log(products)
+  //console.log(products)
   userHelper.placeOrder(paymentMethod,selectedAddress,total,products,req.session.user._id).then((response) => {
     res.json({status: true})
   })
@@ -198,8 +197,34 @@ router.post('/checkout',verifyLogin, async(req, res) => {
 
 router.get('/orderplaced',verifyLogin, async(req,res) => {
   let user = req.session.user
-
   res.render('user/orderplaced', { user })
+})
+
+router.get('/orders',verifyLogin, async(req,res) => {
+  let orders = await userHelper.getUserOrder(req.session.user._id)
+  res.render('user/orders', { user: req.session.user, orders })
+})
+
+router.get('/orderedProducts/:id',verifyLogin, async(req,res) => {
+  let orderId = req.params.id
+  //console.log(orderId)
+  let orders = await userHelper.getUserOrder(req.session.user._id)
+  let orderProducts = await userHelper.getOrderProducts(orderId)
+
+  for (let i = 0; i < orderProducts.length; i++) {
+    if (orderProducts[i].product.OfferPrice === '0') {
+      orderProducts[i].product.OfferPrice = '';
+    }
+  }
+  
+  let oneOrder = orders.filter((order) => {
+    return(order._id == orderId) 
+    
+  })
+
+  console.log(oneOrder) 
+  res.render('user/orderedProducts', { user:req.session.user, orderProducts, oneOrder })
+  
 })
 
 module.exports = router;
