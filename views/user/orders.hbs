@@ -1,18 +1,31 @@
 <style>
-  tbody tr:nth-child(n+6) {
+  #orderTable_filter label{
     display: none;
   }
-  #less{
-    display: none;
+  #orderTable_filter{
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
-  #show {
-    display: none;
+  #orderTable_paginate {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  #orderTable_length select{
+    background-color: white;
+  }
+  #orderTable_length label{
+    font-size: 18px;
+    font-weight: 500;
+    color: blue;
+  }
+  #orderTable_info {
+    color: blue;
   }
 </style>
 
 <section>
-    <div class="container">
-         <table class="table mt-5">
+    <div class="container mt-5">
+         <table class="table mt-5" id="orderTable">
         <thead>
           <tr>
             <th scope="col">Order</th>
@@ -20,7 +33,7 @@
             <th scope="col">Total Amount</th>
             <th scope="col">Payment</th>
             <th scope="col">Status</th>
-            <th scope="col"></th>
+            <th scope="col">Options</th>
           </tr>
         </thead>
         <tbody>
@@ -36,38 +49,20 @@
           {{/each}}
         </tbody>
         </table>
-        {{#if orders}}
-        <button type="button" class="btn btn-primary" id="show" style="margin-left: 450px;margin-bottom: 50px;">Show More</button>
-        <button type="button" class="btn btn-primary" id="less" style="margin-left: 450px;margin-bottom: 50px;">Show Less</button>
-        {{/if}}
     </div>
 </section>
 
 <script>
 
-    window.onload = function() {
-  var tableRows = document.querySelectorAll("tbody tr");
-  if(tableRows.length > 5) {
-    document.getElementById("show").style.display = "block"
-  }
-}
-    
-  document.getElementById("show").addEventListener("click", function(){
-    var tableRows = document.querySelectorAll("tbody tr:nth-child(n+5)");
-    for(var i = 0; i < tableRows.length; i++) {
-      tableRows[i].style.display = "table-row";
-    }
-    document.getElementById("show").style.display = "none";
-    document.getElementById("less").style.display = "block";
-  });
+  $( function () {
+    $('#orderTable').DataTable({
+        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+    });
+} );
 
-  document.getElementById("less").addEventListener("click", function(){
-    var tableRows = document.querySelectorAll("tbody tr:nth-child(n+6)");
-    for(var i = 0; i < tableRows.length; i++) {
-      tableRows[i].style.display = "none";
-    }
-    document.getElementById("show").style.display = "block";
-    document.getElementById("less").style.display = "none";
-  });
+
+  $( function () {
+    $('#orderTable').DataTable();
+} );
 
 </script>

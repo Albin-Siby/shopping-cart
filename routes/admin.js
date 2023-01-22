@@ -1,7 +1,7 @@
 var express = require('express');
 const fileUpload = require('express-fileupload');
 var router = express.Router();
-var productHelper = require('../helpers/product-helper')
+var productHelper = require('../modal/product-helper')
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

@@ -313,9 +313,9 @@ module.exports = {
                 res(total[0].total) 
         })
     },
-    addAddress: (address) => {
+    addAddress: (address,userId) => {
         const addrObj = {
-            user: ObjectId(address.userId),
+            user: ObjectId(userId),
             fname: address.Fname,
             lname: address.Lname,
             address: address.Address,
@@ -340,9 +340,9 @@ module.exports = {
             
         })
     },
-    getAddress: () => {
+    getAddress: (userId) => {
         return new Promise(async(res,rej) => {
-            let allAddress = await db.get().collection(collections.ADDRESS_COLLECTION).find().toArray()
+            let allAddress = await db.get().collection(collections.ADDRESS_COLLECTION).find({user: ObjectId(userId)}).toArray()
             res(allAddress)
     })
     },

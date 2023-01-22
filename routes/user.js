@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var productHelper = require('../helpers/product-helper')
-var userHelper = require('../helpers/user-helper')
+var productHelper = require('../modal/product-helper')
+var userHelper = require('../modal/user-helper')
 
 const verifyLogin = (req,res,next) => {
   if(req.session.loggedIn) {
@@ -64,10 +64,10 @@ router.get('/login', (req,res) => {
 
 router.post('/signup', (req,res) => {
   userHelper.doSignup(req.body).then((userData) => {
-    //console.log(userData)
-    req.session.loggedIn = true
+    //console.log(userData)  
     req.session.user = userData
-    res.redirect('/')
+    // req.session.loggedIn = true
+    res.redirect('/login')
   })
 })
 
@@ -151,7 +151,7 @@ router.get("/checkout",verifyLogin, async(req,res) => {
   //console.log(products)
   // let selectedAddress = await userHelper.getOneAddress(addressId)
   let total = await userHelper.getTotalAmount(req.session.user._id)
-  userHelper.getAddress().then((allAddress) => {
+  userHelper.getAddress(req.session.user._id).then((allAddress) => {
     //console.log(allAddress)
     res.render("user/checkout",{user:req.session.user, total, cartCount, products, usercart: true, allAddress})
   })
@@ -173,9 +173,10 @@ router.get('/add-address',verifyLogin, async(req,res) => {
   
 })
 
-router.post('/add-address', (req,res) => {
+router.post('/add-address',verifyLogin, (req,res) => {
   //console.log(req.body)
-  userHelper.addAddress(req.body).then((response) => {
+  userHelper.addAddress(req.body,req.session.user._id).then((addrData) => {
+    // req.session.user = addrData;
     res.redirect('/checkout')
   })
 })
@@ -197,15 +198,39 @@ router.post('/checkout',verifyLogin, async(req, res) => {
 
 router.get('/orderplaced',verifyLogin, async(req,res) => {
   let user = req.session.user
-  res.render('user/orderplaced', { user })
+  let productCount = null
+  let usercart
+  
+  if(req.session.user) {
+    productCount =await userHelper.getCartProductCount(req.session.user._id)
+    
+  }
+  res.render('user/orderplaced', { user, productCount, usercart:false })
 })
 
 router.get('/orders',verifyLogin, async(req,res) => {
+  let user = req.session.user
+  //console.log(user)
+  let productCount = null
+  let usercart
+  
+  if(req.session.user) {
+    productCount =await userHelper.getCartProductCount(req.session.user._id)
+    
+  }
   let orders = await userHelper.getUserOrder(req.session.user._id)
-  res.render('user/orders', { user: req.session.user, orders })
+  res.render('user/orders', { user: req.session.user, orders, productCount, usercart:false })
 })
 
 router.get('/orderedProducts/:id',verifyLogin, async(req,res) => {
+
+  let productCount = null
+  let usercart
+  
+  if(req.session.user) {
+    productCount =await userHelper.getCartProductCount(req.session.user._id) 
+  }
+
   let orderId = req.params.id
   //console.log(orderId)
   let orders = await userHelper.getUserOrder(req.session.user._id)
@@ -223,7 +248,7 @@ router.get('/orderedProducts/:id',verifyLogin, async(req,res) => {
   })
 
   console.log(oneOrder) 
-  res.render('user/orderedProducts', { user:req.session.user, orderProducts, oneOrder })
+  res.render('user/orderedProducts', { user:req.session.user, orderProducts, oneOrder, productCount, usercart:false })
   
 })
 
