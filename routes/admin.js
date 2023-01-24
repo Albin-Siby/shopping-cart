@@ -75,4 +75,10 @@ router.post('/edit-product/:id',fileUpload(), (req,res) => {
   })
 })
 
+router.get('/allusers', async(req,res) => {
+  let users = await productHelper.getAllUsers()
+  console.log(users)
+  res.render('admin/allusers', { users, admin: true })
+})
+
 module.exports = router;

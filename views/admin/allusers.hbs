@@ -1,0 +1,67 @@
+<style>
+  #usersTable_filter label{
+    display: none;
+  }
+  #usersTable_filter{
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  #usersTable_paginate {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  #usersTable_length select{
+    background-color: white;
+    margin-bottom: 10px;
+  }
+  #usersTable_length label{
+    font-size: 18px;
+    font-weight: 500;
+    color: blue;
+  }
+  #usersTable_info {
+    color: blue;
+  }
+</style>
+
+<section>
+    <div class="container mt-5">
+        <table class="table mt-5" id="usersTable">
+        <thead style="background-color: orange;">
+          <tr>
+            <th scope="col">No</th>
+            <th scope="col">User Id</th>
+            <th scope="col">Email</th>
+            <th scope="col">Name</th>
+            <th scope="col">Mobile</th>
+          </tr>
+        </thead>
+        <tbody>
+           {{#each users}}
+          <tr>
+            <th scope="row">{{@index}}</th>
+            <td>{{this._id}}</td>
+            <td>{{this.Email}}</td>
+            <td>{{this.Name}}</td>
+            <td>{{this.Mobile}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+        </table>
+    </div>
+    <hr class="m-3">
+
+</section>
+
+<script>
+  $( function () {
+    $('#usersTable').DataTable({
+        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
+    });
+} );
+
+
+  $( function () {
+    $('#usersTable').DataTable();
+} );
+</script>

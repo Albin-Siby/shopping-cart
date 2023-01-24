@@ -116,10 +116,10 @@ router.get('/cart',verifyLogin, async(req,res) => {
 
 router.get('/add-to-cart/:id', (req,res) => {
   let proId = req.params.id
-  userHelper.addToCart(proId,req.session.user._id).then(() => {
-  //res.redirect('/')
-  res.json({status: true})
-  })
+    userHelper.addToCart(proId,req.session.user._id).then(() => {
+      //res.redirect('/')
+      res.json({status: true})
+      })
   
 })
 

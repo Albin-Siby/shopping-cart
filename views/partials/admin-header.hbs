@@ -35,7 +35,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/admin">All Products</a>
+                    <a class="nav-link" aria-current="page" href="/admin">All Products</a>
                 </li>
 
                 <li class="nav-item">
@@ -43,7 +43,7 @@
                 </li>
         
                <li class="nav-item">
-                    <a class="nav-link" href="#">All Users</a>
+                    <a class="nav-link" href="/admin/allusers">All Users</a>
                 </li>
             </ul>
             </div>
@@ -53,12 +53,14 @@
 
     <script>
 
-        var navLinks = document.querySelectorAll('.nav-link')
-        navLinks.forEach(link => {
-            link.addEventListener('click', e => {
-                navLinks.forEach(link => link.classList.remove('active'))
-                e.target.classList.add('active')
-            })
-        })
+        var links = document.querySelectorAll('.navbar-nav .nav-link');
+        var currentUrl = window.location.pathname;
+        for (var i = 0; i < links.length; i++) {
+            var link = links[i];
+
+            if (link.getAttribute('href') === currentUrl) {
+                link.classList.add('active');
+            }
+        }
 
     </script>

@@ -51,6 +51,12 @@ module.exports = {
                 rej(error)
             })
         })
+    },
+    getAllUsers: () => {
+        return new Promise(async(res,rej) => {
+            let users = await db.get().collection(collections.USER_COLLECTION).find().toArray()
+            res(users)
+        })
     }
     
 }
