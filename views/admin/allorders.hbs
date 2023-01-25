@@ -1,67 +1,68 @@
 <style>
-  #usersTable_filter label{
+  #ordersTable_filter label{
     display: none;
   }
-  #usersTable_filter{
+  #ordersTable_filter{
     margin-top: 20px;
     margin-bottom: 20px;
   }
-  #usersTable_paginate {
+  #ordersTable_paginate {
     margin-top: 20px;
     margin-bottom: 20px;
   }
-  #usersTable_length select{
+  #ordersTable_length select{
     background-color: white;
     margin-bottom: 10px;
   }
-  #usersTable_length label{
+  #ordersTable_length label{
     font-size: 18px;
     font-weight: 500;
     color: blue;
   }
-  #usersTable_info {
+  #ordersTable_info {
     color: blue;
   }
 </style>
 
 <section>
     <div class="container mt-5">
-        <table class="table mt-5" id="usersTable">
+        <table class="table mt-5" id="ordersTable">
         <thead style="background-color: orange;">
           <tr>
             <th scope="col">No</th>
-            <th scope="col">User Id</th>
-            <th scope="col">Email</th>
-            <th scope="col">Name</th>
-            <th scope="col">Mobile</th>
+            <th scope="col">Order Id</th>
+            <th scope="col">Date</th>
+            <th scope="col">Status</th>
+            <th scope="col">Payment Method</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
-           {{#each users}}
+           {{#each orders}}
           <tr>
             <th scope="row">{{@index}}</th>
-            <td>#user{{this._id}}</td>
-            <td>{{this.Email}}</td>
-            <td>{{this.Name}}</td>
-            <td>{{this.Mobile}}</td>
+            <td>#order{{this._id}}</td>
+            <td>{{this.date}}</td>
+            <td>{{this.status}}</td>
+            <td>{{this.paymentMethod}}</td>
+            <td><a href="/admin/order-process/{{this._id}}"><i class="fas fa-edit"></i></a></td>
           </tr>
           {{/each}}
         </tbody>
         </table>
     </div>
     <hr class="m-3">
-
 </section>
 
 <script>
   $( function () {
-    $('#usersTable').DataTable({
+    $('#ordersTable').DataTable({
         "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
     });
 } );
 
 
   $( function () {
-    $('#usersTable').DataTable();
+    $('#ordersTable').DataTable();
 } );
 </script>

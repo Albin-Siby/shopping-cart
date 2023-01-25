@@ -1,0 +1,112 @@
+<section>
+    <div class="container">
+        <div class="row">
+            {{#if order}}
+            <div class="col-md-8">
+                <div class="container mt-3" style="background-color: white;width: 100%;height: 100%;border:1px solid grey;margin-left:0;">    
+
+                    <div class="mt-3">
+                        <h4>Shipping Info</h4>
+                        <span style="color: blue;">
+                            <div class="mt-3" style="margin-left: 50px;">
+                                <strong>
+                                {{order.deliveryDetails.firstName}}&nbsp;{{order.deliveryDetails.lastName}}<br>
+                                {{order.deliveryDetails.address}}, {{order.deliveryDetails.town}}<br>
+                                {{order.deliveryDetails.state}}, {{order.deliveryDetails.country}}, {{order.deliveryDetails.pin}}<br>
+                                {{order.deliveryDetails.phone}}<br>
+                                {{order.deliveryDetails.email}}.
+                                </strong>
+                            </div>
+                        </span>
+                    </div>
+                    <hr class="m-5" style="height: 2px;background-color:black">
+                    <div class="mt-5">
+                        <h4>Payment</h4>
+                        <span style="color: green;">
+                            <strong>
+                            <p class="m-4">{{order.paymentMethod}}</p>
+                            <p class="m-4">Total Amount: {{order.total}}</p>
+                            </strong>
+                        </span>
+                    </div>
+                    <hr class="m-5" style="height: 2px;background-color:black">
+                    <div class="mt-5">
+                        <h4>Order Status</h4>
+                        <strong><p class="m-4" style="color: red;" id="status">{{order.status}}</p></strong>
+                    </div>
+                    <hr class="m-5" style="height: 2px;background-color:black">
+                    <div class="mt-5">
+                        <h4>Items</h4>
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {{#each orderProducts}}
+                                <tr>
+                                    <td class="p-3"><img src="/product-images/{{this.product._id}}_1.jpg" alt="" style="width: 70px;height: auto;"></td>
+                                    <td class="p-3">{{this.product.Name}}</td>
+                                    <td class="p-3">Qty: {{this.quantity}}</td>
+                                    {{#if this.product.OfferPrice}}
+                                        <td class="p-3">Rs.{{this.product.OfferPrice}}</td>
+                                    {{else}}
+                                    <td class="p-3">Rs.{{this.product.Price}}</td>
+                                    {{/if}}
+                                </tr>
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+   
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="container mt-3" style="background-color: white;width: 100%;height: 100%;border:1px solid grey;margin-left:-22px;">
+                    <h4 class="mt-5" style="text-align:center;">Process Order</h4>
+                    <select id="order-status" class="form-control mt-5">
+                        <option value="Choose Category">Choose Category</option>
+                        <option value="shipped" class="p-3">Shipped</option>
+                    </select>
+                    <button class="btn-danger mt-4 mx-auto d-grid col-6 p-2" data-id='{{order._id}}'>Process</button>
+                </div>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+
+<script>
+
+let id = ""
+
+const select = document.getElementById("order-status");
+const processBtn = document.querySelector(".btn-danger");
+
+processBtn.addEventListener("click", (event) => {
+    event.preventDefault()
+    changeStatus(event.target.dataset.id);
+});
+
+function changeStatus(id) { 
+    this.id = id   
+    const selectedValue = select.value;
+    const data = { status: selectedValue, orderId: this.id };
+    $.ajax({
+        url: '/admin/order-process',
+        data: data,
+        method: 'post',
+        success: (response) => {
+            if(response.status) {
+                location.reload()
+            }
+        }
+    });
+}
+
+</script>

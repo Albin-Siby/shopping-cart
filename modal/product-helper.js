@@ -3,6 +3,16 @@ var collections = require('../config/collections')
 const { ObjectId } = require('mongodb')
 
 module.exports = {
+    doLogin: (adminData) => {
+        return new Promise(async (res, rej) => {
+          let admin = await db.get().collection("admin").findOne({username:adminData.username});
+          if(admin && admin.password === adminData.password) {
+            res({status: true, passwordMatch: true, admin});
+          } else {
+            res({status: false, passwordMatch: false});
+          }
+        });
+      },
     addProduct: (product, callback) => {
         //console.log(product)
 
@@ -56,6 +66,29 @@ module.exports = {
         return new Promise(async(res,rej) => {
             let users = await db.get().collection(collections.USER_COLLECTION).find().toArray()
             res(users)
+        })
+    },
+    getAllOrders: () => {
+        return new Promise(async(res,rej) => {
+            let orders = await db.get().collection(collections.ORDER_COLLECTION).find().toArray()
+            res(orders)
+        })
+    },
+    getOneOrder: (orderId) => {
+        //console.log(orderId)
+        return new Promise(async(res,rej) => {
+            let order = await db.get().collection(collections.ORDER_COLLECTION).findOne({_id: ObjectId(orderId)})
+            res(order)
+        })
+    },
+    changeStatus: (status,orderId) => {
+        console.log(status,orderId)
+        return new Promise(async(res,rej) => {
+          await db.get().collection(collections.ORDER_COLLECTION)
+          .findOneAndUpdate({_id: ObjectId(orderId)},{$set:{status: status}})
+          .then((response) => {
+            res({status: true})
+          })
         })
     }
     

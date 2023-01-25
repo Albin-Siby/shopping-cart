@@ -25,42 +25,50 @@
 </style>
 
 <header>
-        <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary" style="height:120px;">
-            <div class="container-fluid">
-                {{!-- <a class="navbar-brand" href="#">Admin Panel</a> --}}
-                <button style="width: 140px;height:120px;border-radius: 120px;font-size:20px" id="admin">ADMIN PANEL</button>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-                </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/admin">All Products</a>
-                </li>
+    <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary" style="height:120px;">
+        <div class="container-fluid">
+            {{!-- <a class="navbar-brand" href="#">Admin Panel</a> --}}
+            <button style="width: 140px;height:120px;border-radius: 120px;font-size:20px" id="admin">ADMIN PANEL</button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/admin">All Products</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/allorders">All Orders</a>
+            </li>
+    
+           <li class="nav-item">
+                <a class="nav-link" href="/admin/allusers">All Users</a>
+            </li>
+        </ul>
+        </div>
+        {{#if adm}}
+        <a href="/logout" class="btn btn-outline-dark btn-lg" style="margin-right: 10px;">
+        Log out
+        </a>
+        <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" class="rounded-circle" height="50" 
+        alt="Black and White Portrait of a Man" loading="lazy"
+        />
+        {{/if}}
+        </div>
+    </nav>
+</header>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#">All Orders</a>
-                </li>
-        
-               <li class="nav-item">
-                    <a class="nav-link" href="/admin/allusers">All Users</a>
-                </li>
-            </ul>
-            </div>
-            </div>
-        </nav>
-    </header>
+<script>
 
-    <script>
+    var links = document.querySelectorAll('.navbar-nav .nav-link');
+    var currentUrl = window.location.pathname;
+    
+    for (var i = 0; i < links.length; i++) {
+        var link = links[i];
 
-        var links = document.querySelectorAll('.navbar-nav .nav-link');
-        var currentUrl = window.location.pathname;
-        for (var i = 0; i < links.length; i++) {
-            var link = links[i];
-
-            if (link.getAttribute('href') === currentUrl) {
-                link.classList.add('active');
-            }
+        if (link.getAttribute('href') === currentUrl) {
+            link.classList.add('active');
         }
+    }
 
-    </script>
+</script>

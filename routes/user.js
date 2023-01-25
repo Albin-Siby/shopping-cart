@@ -4,7 +4,7 @@ var productHelper = require('../modal/product-helper')
 var userHelper = require('../modal/user-helper')
 
 const verifyLogin = (req,res,next) => {
-  if(req.session.loggedIn) {
+  if(req.session.user.loggedIn) {
     next()
   } else {
     res.redirect('/login')
@@ -54,11 +54,11 @@ router.get('/signup', (req,res) => {
 })
 
 router.get('/login', (req,res) => {
-  if(req.session.loggedIn){
+  if(req.session.user){
     res.redirect('/')
   } else{
-    res.render('user/login', { loginerr: req.session.loginErr })
-    req.session.loginErr = false
+    res.render('user/login')
+    
   }
 })
 
@@ -66,7 +66,7 @@ router.post('/signup', (req,res) => {
   userHelper.doSignup(req.body).then((userData) => {
     //console.log(userData)  
     req.session.user = userData
-    // req.session.loggedIn = true
+    req.session.user.loggedIn = true
     res.redirect('/login')
   })
 })
@@ -74,18 +74,18 @@ router.post('/signup', (req,res) => {
 router.post('/login', (req,res) => {
   userHelper.doLogin(req.body).then((respond) => {
     if(respond.Status) {
-      req.session.loggedIn= true;
       req.session.user = respond.user;
+      req.session.user.loggedIn= true;
+      
       res.redirect('/')
     } else {
-      req.session.loginErr = true
       res.redirect('/login')
     }
   })
 })
 
 router.get('/logout', (req,res) => {
-  req.session.destroy()
+  req.session.user = null
   res.redirect('/')
 })
 
@@ -247,7 +247,7 @@ router.get('/orderedProducts/:id',verifyLogin, async(req,res) => {
     
   })
 
-  console.log(oneOrder) 
+  //console.log(oneOrder) 
   res.render('user/orderedProducts', { user:req.session.user, orderProducts, oneOrder, productCount, usercart:false })
   
 })

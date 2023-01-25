@@ -2,18 +2,51 @@ var express = require('express');
 const fileUpload = require('express-fileupload');
 var router = express.Router();
 var productHelper = require('../modal/product-helper')
+var userHelper = require('../modal/user-helper')
+
+const verifyLogin = (req,res,next) => {
+  if(req.session.admin.loggedIn) {
+    next()
+  } else {
+    res.redirect('/login')
+  }
+}
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', (req,res) => {
+  if(req.session.admin) {
+    productHelper.getAllProducts().then((products) => {
+      res.render('admin/view-products', {admin: true, products, adm:req.session.admin});
+    });
+  } else {
+    res.render('admin/login', { admin: true })
+  }
+  
+})
 
-  productHelper.getAllProducts().then((products) => {
-    res.render('admin/view-products', {admin: true, products})
-  })
-
+router.post('/', function(req, res, next) {
+  productHelper.doLogin(req.body).then((response) => {
+    if(response.status && response.passwordMatch) {
+      req.session.admin = response.admin
+      req.session.admin.loggedIn = true
+      res.redirect('/admin/')
+    } else {
+      res.redirect('/admin');
+    }
+  });
 });
 
+router.get('/admin',verifyLogin, (req,res,next) => {
+  res.redirect('admin/view-products')
+})
+
+router.get('/logout', (req,res) => {
+  req.session.admin = null
+  res.redirect('/admin')
+})
+
 router.get('/add-products', (req,res) => {
-  res.render('admin/add-products', {admin: true})
+  res.render('admin/add-products', {admin: true, adm:req.session.admin})
 })
 
 router.post('/add-products',fileUpload(), (req,res) => {
@@ -58,7 +91,7 @@ router.get('/delete-product/:id', (req,res) => {
 router.get('/edit-product/:id', async(req,res) => {
   let proId = req.params.id
   await productHelper.getProductDetails(proId).then((product)=> {
-    res.render('admin/edit-product', { product, admin: true })
+    res.render('admin/edit-product', { product, admin: true, adm:req.session.admin })
   })
   
 })
@@ -77,8 +110,38 @@ router.post('/edit-product/:id',fileUpload(), (req,res) => {
 
 router.get('/allusers', async(req,res) => {
   let users = await productHelper.getAllUsers()
-  console.log(users)
-  res.render('admin/allusers', { users, admin: true })
+  //console.log(users)
+  res.render('admin/allusers', { users, admin: true, adm:req.session.admin })
+})
+
+router.get('/allorders', async(req,res) => {
+  let orders = await productHelper.getAllOrders()
+  //console.log(orders)
+  res.render('admin/allorders', {admin: true, orders, adm:req.session.admin })
+})
+
+router.get('/order-process/:id', async(req,res) => {
+  let orderId = req.params.id
+  let order = await productHelper.getOneOrder(orderId)
+  let orderProducts = await userHelper.getOrderProducts(orderId)
+
+  for (let i = 0; i < orderProducts.length; i++) {
+    if (orderProducts[i].product.OfferPrice === '0') {
+      orderProducts[i].product.OfferPrice = '';
+    }
+  }
+  //console.log(orderProducts)
+  //console.log(order)
+  res.render('admin/order-process', { admin: true, order, orderProducts, adm:req.session.admin })
+})
+
+router.post('/order-process', (req,res) => {
+  //console.log(req.body)
+  let status = req.body.status
+  let orderId = req.body.orderId
+  productHelper.changeStatus(status,orderId).then((response) => {
+    res.json(response)
+  })
 })
 
 module.exports = router;
