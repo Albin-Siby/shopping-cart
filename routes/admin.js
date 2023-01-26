@@ -5,10 +5,10 @@ var productHelper = require('../modal/product-helper')
 var userHelper = require('../modal/user-helper')
 
 const verifyLogin = (req,res,next) => {
-  if(req.session.admin.loggedIn) {
+  if(req.session.admin) {
     next()
   } else {
-    res.redirect('/login')
+    res.redirect('admin/login')
   }
 }
 
@@ -41,8 +41,9 @@ router.get('/admin',verifyLogin, (req,res,next) => {
 })
 
 router.get('/logout', (req,res) => {
-  req.session.admin = null
-  res.redirect('/admin')
+  req.session.admin.loggedIn = false
+  req.session.admin = ""
+  res.redirect('/admin/')
 })
 
 router.get('/add-products', (req,res) => {

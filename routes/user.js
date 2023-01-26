@@ -4,7 +4,7 @@ var productHelper = require('../modal/product-helper')
 var userHelper = require('../modal/user-helper')
 
 const verifyLogin = (req,res,next) => {
-  if(req.session.user.loggedIn) {
+  if(req.session.user) {
     next()
   } else {
     res.redirect('/login')
@@ -84,7 +84,7 @@ router.post('/login', (req,res) => {
   })
 })
 
-router.get('/logout', (req,res) => {
+router.get('/user/logout', (req,res) => {
   req.session.user = null
   res.redirect('/')
 })

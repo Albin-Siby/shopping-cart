@@ -384,7 +384,13 @@ module.exports = {
             }
 
             db.get().collection(collections.ORDER_COLLECTION).insertOne(ordObj).then((response) => {
-                db.get().collection(collections.CART_COLLECTION).deleteOne({user: ObjectId(userId)})
+                products.forEach(async(product) => {
+                    let decrement = -1 * product.quantity;
+                    await db.get().collection(collections.PRODUCT_COLLECTION)
+                    .updateOne({_id: ObjectId(product.item)}, {$inc: { Stock: decrement}})
+                    db.get().collection(collections.CART_COLLECTION).deleteOne({user: ObjectId(userId)})
+                })
+                
                 res()
             })
         })

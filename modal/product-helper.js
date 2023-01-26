@@ -15,7 +15,7 @@ module.exports = {
       },
     addProduct: (product, callback) => {
         //console.log(product)
-
+        product.Stock = parseInt(product.Stock)
         db.get().collection('products').insertOne(product).then((data) => {
             //console.log(data)
             callback(data.insertedId)
@@ -53,7 +53,9 @@ module.exports = {
                     Name: proDetails.Name,
                     Category: proDetails.Category,
                     Price: proDetails.Price,
-                    Description: proDetails.Description
+                    OfferPrice: proDetails.OfferPrice,
+                    Description: proDetails.Description,
+                    Stock: proDetails.Stock
                 }
             }).then((respond) => {
                 res()
@@ -82,14 +84,16 @@ module.exports = {
         })
     },
     changeStatus: (status,orderId) => {
-        console.log(status,orderId)
-        return new Promise(async(res,rej) => {
-          await db.get().collection(collections.ORDER_COLLECTION)
-          .findOneAndUpdate({_id: ObjectId(orderId)},{$set:{status: status}})
-          .then((response) => {
-            res({status: true})
-          })
-        })
+        //console.log(status,orderId)
+        if(status === "Shipped") {
+            return new Promise(async(res,rej) => {
+              await db.get().collection(collections.ORDER_COLLECTION)
+              .findOneAndUpdate({_id: ObjectId(orderId)},{$set:{status: status}})
+              .then((response) => {
+                res({status: true})
+              })
+            })
+        }
     }
     
 }

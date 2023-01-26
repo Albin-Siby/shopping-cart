@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({secret: "key", resave: true, saveUninitialized: true, cookie: {maxAge: 300000}}))
+app.use(session({secret: "key", resave: true, saveUninitialized: true, cookie: {maxAge: 30 * 60 * 1000}})) //set session time to 30 minutes
 
 db.connect((err) => {
   if(err) {
