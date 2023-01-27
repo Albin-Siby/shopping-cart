@@ -340,6 +340,13 @@ module.exports = {
             
         })
     },
+    deleteAddress: (addrId) => {
+        return new Promise((res,rej) => {
+            db.get().collection(collections.ADDRESS_COLLECTION).deleteOne({_id: ObjectId(addrId)}).then((data) => {
+                res(data)
+            })
+        })
+    },
     getAddress: (userId) => {
         return new Promise(async(res,rej) => {
             let allAddress = await db.get().collection(collections.ADDRESS_COLLECTION).find({user: ObjectId(userId)}).toArray()
@@ -388,9 +395,9 @@ module.exports = {
                     let decrement = -1 * product.quantity;
                     await db.get().collection(collections.PRODUCT_COLLECTION)
                     .updateOne({_id: ObjectId(product.item)}, {$inc: { Stock: decrement}})
-                    db.get().collection(collections.CART_COLLECTION).deleteOne({user: ObjectId(userId)})
+                   
                 })
-                
+                db.get().collection(collections.CART_COLLECTION).deleteOne({user: ObjectId(userId)})
                 res()
             })
         })
@@ -433,6 +440,25 @@ module.exports = {
                         as: 'product'
                     }
                 },
+                // {
+                //     $project:{
+                //         item:1,
+                //         quantity:1,
+                //         product:1,
+                //         status: "$status",
+                //     }
+                // },
+                // {
+                //     $addFields: {
+                //         product: {
+                //             $map: {
+                //                 input: "$product",
+                //                 as: "p",
+                //                 in: { $mergeObjects: [ "$$p", { status: "$status" } ] }
+                //             }
+                //         }
+                //     }
+                // },                
                 {
                     $project:{
                         item:1,
@@ -445,6 +471,71 @@ module.exports = {
             //console.log(orderItems)
             res(orderItems)
         })
+    },
+    // cancelProduct: (orderId, proId) => {
+    //     return new Promise((res, rej) => {
+    //         db.get().collection(collections.ORDER_COLLECTION)
+    //         .aggregate([
+    //             { $match: { _id: ObjectId(orderId) } },
+    //             { $unwind: "$products" },
+    //             { $match: { "products.item": ObjectId(proId) } },
+    //             {
+    //                 $lookup:{
+    //                     from: collections.PRODUCT_COLLECTION,
+    //                     localField: 'item',
+    //                     foreignField: '_id',
+    //                     as: 'product'
+    //                 }
+    //             },
+    //             { $project: { _id: 0, product:1, price: "$product.price" } }
+    //         ]).toArray()
+    //         .then((result) => {
+    //             console.log(result)
+    //             const canceledProductPrice = parseInt(result[0].price);
+    //             db.get().collection(collections.ORDER_COLLECTION)
+    //             .updateOne(
+    //                 { _id: ObjectId(orderId) },
+    //                 { $inc: { total: -canceledProductPrice }, $pull: { "products": { "item": ObjectId(proId) } } }
+    //             )            
+    //             .then((response) => {
+    //                 db.get().collection(collections.ORDER_COLLECTION)
+    //                 .findOne({ _id: ObjectId(orderId) }, { total: 1 })
+    //                 .then((order) => {
+    //                     res({ status: true, total: order.total });
+    //                 });
+    //             });
+    //         });
+    //     });
+    // },
+    cancelProduct: (orderId,proId) => {
+        return new Promise(async(res,rej) => {
+            let price;
+            await db.get().collection(collections.PRODUCT_COLLECTION).findOne({_id: ObjectId(proId)}).then((data) => {
+                if(data.OfferPrice === '0') {
+                    price = data.Price
+                } else {
+                    price = data.OfferPrice
+                }
+            })
+            const order = await db.get().collection(collections.ORDER_COLLECTION)
+            .findOne({ _id: ObjectId(orderId) });
+
+            if(order.products.length > 1) {
+                await db.get().collection(collections.ORDER_COLLECTION)
+                .updateOne( 
+                    { _id: ObjectId(orderId) }, 
+                    { $inc: { total: -price }, $pull: { "products": { "item": ObjectId(proId) } } } 
+                ).then((response) => {
+                    res({status: true, length: true})
+                })
+            } else {
+                await db.get().collection(collections.ORDER_COLLECTION)
+                .deleteOne({ _id: ObjectId(orderId) })
+                .then(response => {
+                    res({ status: true, length: false });
+                });
+            }
+        })
     }
-      
+
 }

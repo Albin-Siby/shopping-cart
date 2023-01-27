@@ -35,7 +35,7 @@
                 <td>Rs.{{this.product.Price}}</td>
             {{/if}}
             <td class="p-3">{{this.status}}</td>
-            <td class="p-3"><a href="" class="btn btn-danger">Cancel Order</a></td>
+            <td class="p-3"><button class="btn btn-danger" onclick="cancelProduct('{{this._id}}','{{this.product._id}}')">Cancel Order</button></td>
           </tr>
           {{/each}}
         </tbody>
@@ -67,3 +67,28 @@
 
     {{/each}}
 </section>
+
+<script>
+    function cancelProduct(orderId,proId) {
+        $.ajax({
+            url: "/cancel-product",
+            method: "post",
+            data: {
+                orderId: orderId,
+                proId: proId
+            },
+            success: (response) => {
+                if(response.length) {
+                    if(response.status) {
+                        location.reload()
+                    }
+                } else {
+                    if(response.status) {
+                        location.href = '/orders'
+                    }
+                }
+                
+            }
+        })
+    }
+</script>

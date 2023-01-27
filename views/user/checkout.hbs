@@ -1,5 +1,5 @@
 <style>
-    .btn:hover{
+    #orderplaced:hover{
         color: black;
         background-color: white;
     }
@@ -81,6 +81,7 @@
                             <span>{{this.pin}}</span>
                             <span>{{this.phone}}</span>
                             <span>{{this.email}}</span>
+                            <a href="/checkout/delete-address/{{this._id}}" class="mt-3 btn btn-danger" style="width: 100px;margin-left: 400px;">Delete</a>
                         </label>    
                     {{/each}}    
                 {{!-- </label>       --}}

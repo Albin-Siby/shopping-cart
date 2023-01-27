@@ -181,20 +181,32 @@ router.post('/add-address',verifyLogin, (req,res) => {
   })
 })
 
-router.post('/checkout',verifyLogin, async(req, res) => {
-  const selectedAddressId = req.body["selected-address"][0];
-  const paymentMethod = req.body["payment-method"]
-  //console.log(selectedAddressId,paymentMethod)
-
-  let selectedAddress = await userHelper.getOneAddress(selectedAddressId)
-  let total = await userHelper.getTotalAmount(req.session.user._id)
-  let cart = await userHelper.getCartProductList(req.session.user._id)
-  let products = cart.products
-  //console.log(products)
-  userHelper.placeOrder(paymentMethod,selectedAddress,total,products,req.session.user._id).then((response) => {
-    res.json({status: true})
+router.get('/checkout/delete-address/:id',verifyLogin, (req,res) => {
+  let addrId = req.params.id
+  userHelper.deleteAddress(addrId).then((data) => {
+    res.redirect('/checkout/')
   })
 })
+
+router.post('/checkout',verifyLogin, async(req, res) => {
+  try {
+    //console.log(req.body)
+    const { 'selected-address': selectedAddressId, 'payment-method': paymentMethod } = req.body;
+
+    let selectedAddress = await userHelper.getOneAddress(selectedAddressId)
+    let total = await userHelper.getTotalAmount(req.session.user._id)
+    let cart = await userHelper.getCartProductList(req.session.user._id)
+    let products = cart.products
+    //console.log(products)
+    userHelper.placeOrder(paymentMethod,selectedAddress,total,products,req.session.user._id).then((response) => {
+      res.json({status: true})
+      return 
+    })
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 
 router.get('/orderplaced',verifyLogin, async(req,res) => {
   let user = req.session.user
@@ -250,6 +262,14 @@ router.get('/orderedProducts/:id',verifyLogin, async(req,res) => {
   //console.log(oneOrder) 
   res.render('user/orderedProducts', { user:req.session.user, orderProducts, oneOrder, productCount, usercart:false })
   
+})
+
+router.post('/cancel-product', (req,res) => {
+  let orderId = req.body.orderId
+  let proId = req.body.proId
+  userHelper.cancelProduct(orderId,proId).then((response) => {
+    res.json(response)
+  })
 })
 
 module.exports = router;

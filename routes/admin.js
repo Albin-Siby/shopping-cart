@@ -46,11 +46,11 @@ router.get('/logout', (req,res) => {
   res.redirect('/admin/')
 })
 
-router.get('/add-products', (req,res) => {
+router.get('/add-products',verifyLogin, (req,res) => {
   res.render('admin/add-products', {admin: true, adm:req.session.admin})
 })
 
-router.post('/add-products',fileUpload(), (req,res) => {
+router.post('/add-products',fileUpload(),verifyLogin, (req,res) => {
   // console.log(req.body)
   //console.log(req.files.image)
 
@@ -109,13 +109,13 @@ router.post('/edit-product/:id',fileUpload(), (req,res) => {
   })
 })
 
-router.get('/allusers', async(req,res) => {
+router.get('/allusers',verifyLogin, async(req,res) => {
   let users = await productHelper.getAllUsers()
   //console.log(users)
   res.render('admin/allusers', { users, admin: true, adm:req.session.admin })
 })
 
-router.get('/allorders', async(req,res) => {
+router.get('/allorders',verifyLogin, async(req,res) => {
   let orders = await productHelper.getAllOrders()
   //console.log(orders)
   res.render('admin/allorders', {admin: true, orders, adm:req.session.admin })

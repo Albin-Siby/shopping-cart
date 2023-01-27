@@ -84,8 +84,7 @@ module.exports = {
         })
     },
     changeStatus: (status,orderId) => {
-        //console.log(status,orderId)
-        if(status === "Shipped") {
+        console.log(status,orderId)
             return new Promise(async(res,rej) => {
               await db.get().collection(collections.ORDER_COLLECTION)
               .findOneAndUpdate({_id: ObjectId(orderId)},{$set:{status: status}})
@@ -93,7 +92,7 @@ module.exports = {
                 res({status: true})
               })
             })
-        }
+        
     }
     
 }
