@@ -1,0 +1,100 @@
+<style>
+       .heading{
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        text-align: center;
+    }
+    .rating-text{
+        color: gray;
+    }
+    #btn1:hover {
+        background-color: black;
+        color: white;
+    }
+    .nav-link:hover{
+        color: orange;
+    }
+    #card-name{
+        font-family: 'Times New Roman', Times, serif;
+    }
+    #card-price{
+        color: rgb(6, 60, 211);
+    }
+    .card{
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add a transition to the transform and box-shadow properties */
+        transform: scale(1); /* Set the initial scale to 1 */
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); /* Set the initial box shadow */
+    }
+    .card:hover {
+        transform: scale(1.1); /* Scale up the card by 10% when hovering */
+        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2); /* Add a box shadow when hovering */
+    }
+    .card:hover .image {
+        filter: blur(2px); /* Blur the image */
+    }
+    .card #cart-button{
+        display: none;
+        position: absolute;
+        left: 0px;
+        bottom: 50%;
+    }
+    .card #view-button{
+        display: none;
+        position: absolute;
+        left: 50%;
+        bottom: 50%;
+    }
+    .card:hover #cart-button{
+        display: block;
+    }
+    .card:hover #view-button{
+        display: block;
+    }
+    .fa{
+        color: orange;
+    }
+    #cart-button:hover,#view-button:hover{
+        background-color: white;
+        color: black;
+    }
+</style>
+
+<section>
+            <div class="container m-5">
+            <h2 class="heading"><u>Products</u></h2>
+            <div class="row">
+                
+                {{#each oneCategory}}
+                    <div class="col-md-2 p-3">
+                        <div class="card" style="width: 11rem;height: 350px;">
+                            <img style="width: 100%;height: 50%;" src="/product-images/{{this._id}}_1.jpg" class="image card-img-top p-1 pb-1" alt="" id="image">
+                            <div class="card-body">
+                                <div>
+                                    <h5 class="card-title" id="card-name">{{this.Name}}</h5>
+                                    {{!-- <p class="card-text" style="color: rgb(99, 98, 98);">{{this.Description}}</p> --}}
+                                    <h5 class="card-title mt-3" id="card-price">Rs: {{this.Price}}</h5>
+                                </div>
+                                <div class="ratings">
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star rating-color"></i>
+                                    <i class="fa fa-star-half-alt"></i>
+                                    <span class="rating-text">(99)</span>
+                                </div>
+                                <div>
+                                    <button  onclick="addToCart('{{this._id}}')" class="btn btn-dark" id="cart-button" style="width: 48%;">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                    <a href="/show-product/{{this._id}}" title="View product"><button class="btn btn-dark" id="view-button" style="width: 50%;">
+                                        <i class="fas fa-eye"> View</i>
+                                    </button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+               
+            </div>
+        </div>
+</section>

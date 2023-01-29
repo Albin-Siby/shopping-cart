@@ -157,7 +157,7 @@
     $('#checkout-form').submit((e)=> {
         e.preventDefault()
         if(selectAddress.value === '') {
-            alert('Please select an address before placing your order.')
+            swal("Error","Please select an address before placing your order.","error")
         } else {
             $.ajax({
                 url: '/checkout',

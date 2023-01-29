@@ -1,18 +1,20 @@
 // Ajax ......
 
 function addToCart(proId) {
-        $.ajax({
-            url:"/add-to-cart/"+proId,
-            type: 'get',
-            success: (response) => {
-                if(response.status) {
-                    let count = $("#cart-count").html()
-                    count = parseInt(count) + 1
-                    $("#cart-count").html(count)
-                }
+    $.ajax({
+        url:"/add-to-cart/"+proId,
+        type: 'get',
+        success: (response) => {
+            if(response.status) {
+                let count = $("#cart-count").html()
+                count = parseInt(count) + 1
+                $("#cart-count").html(count)
+                swal("Item Added to Cart!", "Your item has been added to your cart.", "success");
+            } else {
+                swal("Warning","Please login to continue!", "warning");
             }
-        });
-    
+        }
+    });
 }
 
 function changeQuantity(cartId,proId,userId,count) {
@@ -30,7 +32,7 @@ function changeQuantity(cartId,proId,userId,count) {
         method:"post",
         success: (response) => {
             if(response.maxLimit) {
-               alert("Maximum limit reached")
+               swal("warning","Maximum Limit is Reached","warning")
             } else {
                  document.getElementById(proId).innerHTML = quantity+count
                  document.getElementById('subtotal').innerHTML = response.subtotal
@@ -61,19 +63,44 @@ function changeQuantity(cartId,proId,userId,count) {
 }
 
 function deleteCartProduct(cartId, proId) {
-    $.ajax({
-        url: "/delete-cart-product",
-        data: {
-            cart:cartId,
-            product: proId
-        },
-        method: "delete",
-        success: (response) => {
-            if(response.removeStatus) {
-                alert("Are you sure to delete")
-                document.getElementById(proId).style.display = "none"
-                location.reload()
-            }
+    swal({
+        title: "Are you sure?",
+        text: "Once deleted,  the action is irreversible!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then((willDelete) => {
+        if (willDelete) {
+
+            $.ajax({
+                url: "/delete-cart-product",
+                data: {
+                    cart:cartId,
+                    product: proId
+                },
+                method: "delete",
+                success: (response) => {
+                    if(response.removeStatus) {
+                        document.getElementById(proId).style.display = "none"
+                        location.reload()       
+                    }
+                }        
+            })
+            
+        } else {
+            swal({
+                title: "Your product is safe!",
+                icon: "success",
+                button: "OK",
+                content: {
+                    element: "span",
+                    attributes: {
+                        style: "color: green; font-weight: bold;"
+                    },
+                },
+            });
         }
-    })
+      })
+    
 }

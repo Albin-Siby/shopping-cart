@@ -1,4 +1,5 @@
   <!-- Footer -->
+<div id="footer">
 <footer class="text-center text-lg-start bg-dark text-muted">
   <section class="d-flex justify-content-center justify-content-lg-between p-1 border-bottom"></section>
   <section class="">
@@ -111,9 +112,17 @@
     <!-- Copyright -->
   </section>
 </footer>
+</div>
 <!-- Footer -->
 
 <script>
+
+    $(document).ready(function(){
+      if(window.location.pathname === '/login' || window.location.pathname === '/signup'){
+        $("#footer").hide();
+      }
+  });
+
     document.querySelectorAll("a.text-reset").forEach(function(link) {
         link.addEventListener("click", function() {
             window.scrollTo({

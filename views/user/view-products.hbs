@@ -74,7 +74,18 @@
 </style>
 
     <section>
-        <hr style="height:3px;background-color:black;margin:40px">
+        <hr style="height:2px;background-color:black;margin:10px">
+        <h4 class="text-center" style="color: blue;">Explore Categories</h4>
+        <div class="container mt-4">
+            <div class="row">
+                {{#each categories}}
+                <div class="col-2" style="margin-left: 30px;">   
+                    <button class="btn btn-outline-dark" style="width:140px;height: 80px; border-radius:50%;"><a href="/category/{{this._id}}" style="text-decoration: none;">{{this.Name}}</a></button>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        <hr style="height:2px;background-color:black;margin:40px">
         <div class="container mt-5">
             <h2 class="heading"><u>Products</u></h2>
             <div class="row">
@@ -145,7 +156,7 @@
                                     <span class="rating-text">(99)</span>
                                 </div>
                                 <div>
-                                    <button  onclick="addToCart('{{this._id}}','{{user._id}}')" class="btn btn-dark" id="cart-button" style="width: 48%;">
+                                    <button  onclick="addToCart('{{this._id}}')" class="btn btn-dark" id="cart-button" style="width: 48%;">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
                                     <a href="/show-product/{{this._id}}" title="View product"><button class="btn btn-dark" id="view-button" style="width: 50%;">
@@ -164,6 +175,7 @@
     </section>
 
     <script>
+
         $('.owl-carousel').owlCarousel({
             dots:true,
             loop:true,

@@ -33,6 +33,21 @@ module.exports = {
             }
         })
     },
+    getUser: (userId) => {
+        return new Promise(async(res,rej) => {
+            let user = await db.get().collection(collections.USER_COLLECTION).findOne({_id: ObjectId(userId)})
+            res(user)
+        })
+    },
+    updateAccountDetails: (userId,userDetails) => {
+        return new Promise(async(res,rej) => {
+            await db.get().collection(collections.USER_COLLECTION)
+            .findOneAndUpdate({_id: ObjectId(userId)},{$set:userDetails})
+            .then((response) => {
+                res({status: true})
+            })
+        })
+    },
     addToCart: (prodId,userId) => {
         let proObj = {
             item: ObjectId(prodId),
@@ -535,6 +550,13 @@ module.exports = {
                     res({ status: true, length: false });
                 });
             }
+        })
+    },
+    getOneCategory: (cId) => {
+        return new Promise(async(res,rej) => {
+            let oneCategory = await db.get().collection(collections.CATEGORY_COLLECTION).findOne({_id: ObjectId(cId)})
+            let categoryDetails = await db.get().collection(collections.PRODUCT_COLLECTION).find({Category: oneCategory.Name}).toArray()
+            res(categoryDetails)
         })
     }
 

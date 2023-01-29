@@ -50,6 +50,10 @@ router.get('/add-products',verifyLogin, (req,res) => {
   res.render('admin/add-products', {admin: true, adm:req.session.admin})
 })
 
+router.get('/add-category',verifyLogin, (req,res) => {
+  res.render('admin/add-category', {admin: true, adm:req.session.admin})
+})
+
 router.post('/add-products',fileUpload(),verifyLogin, (req,res) => {
   // console.log(req.body)
   //console.log(req.files.image)
@@ -79,6 +83,13 @@ router.post('/add-products',fileUpload(),verifyLogin, (req,res) => {
       }
     })
     
+  })
+})
+
+router.post('/add-category', (req,res) => {
+  //console.log(req.body)
+  productHelper.addCategory(req.body).then((response) => {
+    res.redirect('/admin/')
   })
 })
 
@@ -113,6 +124,11 @@ router.get('/allusers',verifyLogin, async(req,res) => {
   let users = await productHelper.getAllUsers()
   //console.log(users)
   res.render('admin/allusers', { users, admin: true, adm:req.session.admin })
+})
+
+router.get('/allcategories',verifyLogin, async(req,res) => {
+  let categories = await productHelper.getAllCategory()
+  res.render('admin/allcategories', { categories, admin: true, adm:req.session.admin })
 })
 
 router.get('/allorders',verifyLogin, async(req,res) => {

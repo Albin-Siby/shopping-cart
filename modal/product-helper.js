@@ -21,6 +21,13 @@ module.exports = {
             callback(data.insertedId)
         })
     },
+    addCategory: (category) => {
+        return new Promise(async(res,rej) => {
+            await db.get().collection(collections.CATEGORY_COLLECTION).insertOne(category).then((response) => {
+                res(response)
+            })
+        })
+    },
     getAllProducts: () => {
         return new Promise(async(res,rej) => {
             let products = await db.get().collection(collections.PRODUCT_COLLECTION).find().toArray()
@@ -68,6 +75,12 @@ module.exports = {
         return new Promise(async(res,rej) => {
             let users = await db.get().collection(collections.USER_COLLECTION).find().toArray()
             res(users)
+        })
+    },
+    getAllCategory: () => {
+        return new Promise(async(res,rej) => {
+            let category = await db.get().collection(collections.CATEGORY_COLLECTION).find().toArray()
+            res(category)
         })
     },
     getAllOrders: () => {

@@ -1,0 +1,38 @@
+<style>
+    table {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+    }
+    th {
+        background-color: #4287f5;
+        color: black;
+    }
+
+    td {
+        width: 150px;
+        text-align: center;
+        border: 1px solid black;
+        padding: 5px;
+    }
+</style>
+
+<section>
+    <div class="container mt-3 text-center" style="margin-left: 30%;">
+        <table class="table mt-5" style="width: 500px;">
+        <thead style="background-color: orange;">
+          <tr>
+            <th scope="col">No</th>
+            <th scope="col">Category Name</th>
+          </tr>
+        </thead>
+        <tbody>
+           {{#each categories}}
+          <tr>
+            <td scope="row">{{@index}}</td>
+            <td>{{this.Name}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+        </table>
+    </div>
+</section>
