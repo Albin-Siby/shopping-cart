@@ -5,11 +5,18 @@ const { ObjectId } = require('mongodb')
 module.exports = {
     doLogin: (adminData) => {
         return new Promise(async (res, rej) => {
-          let admin = await db.get().collection("admin").findOne({username:adminData.username});
-          if(admin && admin.password === adminData.password) {
-            res({status: true, passwordMatch: true, admin});
+            let response = {}
+          let admin = await db.get().collection("admin").findOne({username:adminData.Username});
+          if(admin) {
+            if(admin.password === adminData.Password) {
+                response.admin = admin
+                response.status = true
+                res(response);
+            } else {
+                res({Status: false,msg: "Invalid Password"})
+            }    
           } else {
-            res({status: false, passwordMatch: false});
+            res({status: false,msg: "Invalid Username"});
           }
         });
       },

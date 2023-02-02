@@ -3,6 +3,7 @@ const fileUpload = require('express-fileupload');
 var router = express.Router();
 var productHelper = require('../modal/product-helper')
 var userHelper = require('../modal/user-helper')
+const { check, validationResult } = require("express-validator");
 
 const verifyLogin = (req,res,next) => {
   if(req.session.admin) {
@@ -19,19 +20,43 @@ router.get('/', (req,res) => {
       res.render('admin/view-products', {admin: true, products, adm:req.session.admin});
     });
   } else {
-    res.render('admin/login', { admin: true })
+    res.render('admin/login', { loginErr: req.session.loginErr || [], values: req.session.values || {}, admin: true })
   }
   
 })
 
-router.post('/', function(req, res, next) {
+router.post('/',[
+  check("Username").not().isEmpty().withMessage("Email is required"),
+  check("Password").not().isEmpty().withMessage("Password is required")
+], function(req, res, next) {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    let allNull = true;
+    if (errors.array().findIndex(error => error.param === "Username") === -1) {
+      allNull = false;
+    }
+    if (errors.array().findIndex(error => error.param === "Password") === -1) {
+      allNull = false;
+    }
+    if(allNull) {
+      req.session.loginErr = [{ msg: "All fields are required" }];
+      return res.redirect('/admin/');
+      } else {
+      req.session.values = req.body;
+      req.session.loginErr = errors.array();
+      return res.redirect('/admin/');
+      }
+    }
+
   productHelper.doLogin(req.body).then((response) => {
-    if(response.status && response.passwordMatch) {
+    if(response.status) {
       req.session.admin = response.admin
       req.session.admin.loggedIn = true
       res.redirect('/admin/')
     } else {
-      res.redirect('/admin');
+      let loginError = response.msg
+      res.render('admin/login', { loginError, admin: true });
     }
   });
 });

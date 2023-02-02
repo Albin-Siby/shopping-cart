@@ -5,11 +5,35 @@ const { ObjectId } = require('mongodb')
 
 module.exports = {
     doSignup: (userData) => {
+
+        let response = {
+            signupErr: false,
+            message: ""
+        }
+
         return new Promise(async(res,rej) => {
+            let user = await db.get().collection(collections.USER_COLLECTION).count({Email: userData.Email})
+            if(user != 0) {
+                response.message = "User with that email already exist"
+                response.signupErr = true
+                res(response)
+                return
+            } else {
+                let user = await db.get().collection(collections.USER_COLLECTION).count({Mobile: userData.Mobile})
+                if(user != 0) {
+                    response.message = "User with that mobile number already exist"
+                    response.signupErr = true
+                    res(response)
+                    return
+                }
+            }
+
             userData.Password =await bcrypt.hash(userData.Password, 10)
             db.get().collection(collections.USER_COLLECTION).insertOne(userData).then((data) => {
                 userData._id = userData.insertedId
-                res(userData)
+                response.signupErr = false
+                response.message = ""
+                res(response)
             })
         })
     },
@@ -25,11 +49,11 @@ module.exports = {
                         respond.Status = true
                         res(respond)
                     } else {
-                        res({Status: false})
+                        res({Status: false,msg: "Wrong Password"})
                     }
                 })
             } else {
-                res({Status: false})
+                res({Status: false,msg: "Wrong Email"})
             }
         })
     },
@@ -556,6 +580,27 @@ module.exports = {
         return new Promise(async(res,rej) => {
             let oneCategory = await db.get().collection(collections.CATEGORY_COLLECTION).findOne({_id: ObjectId(cId)})
             let categoryDetails = await db.get().collection(collections.PRODUCT_COLLECTION).find({Category: oneCategory.Name}).toArray()
+            res(categoryDetails)
+        })
+    },
+    getFilteredProducts: (maxPrice,cId) => {
+        return new Promise(async(res,rej) => {
+            let oneCategory = await db.get().collection(collections.CATEGORY_COLLECTION).findOne({_id: ObjectId(cId)})
+            let categoryDetails = await db.get().collection(collections.PRODUCT_COLLECTION)
+            .find({ 
+              $and: [
+                { Category: oneCategory.Name },
+                {
+                  $or: [
+                    { $and: [{ OfferPrice: 0 }, { Price: { $lte: maxPrice } }] },
+                    { OfferPrice: { $lte: maxPrice } }
+                  ]
+                }
+              ]
+            })
+            .toArray();
+
+            console.log(categoryDetails)
             res(categoryDetails)
         })
     }
