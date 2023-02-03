@@ -155,10 +155,10 @@ document.getElementById("slider").addEventListener("input", function() {
                 cId:cId
             },
             success: (response) => {
-                console.log(response)
+                //console.log(response)
                 let box = document.getElementById('box')
                 if(response.length !=0) {
-                let products = response.products
+                let products = response.filteredProducts
                 box.innerHTML = ''
                 products.forEach((product) => {
                     box.innerHTML += `
@@ -168,7 +168,14 @@ document.getElementById("slider").addEventListener("input", function() {
                                         <div class="card-body">
                                             <div>
                                                 <h5 class="card-title" id="card-name">${product.Name}</h5>
-                                                <h5 class="card-title mt-3" id="card-price">Rs: ${product.OfferPrice ? product.OfferPrice : product.Price}</h5>
+                                                <h5 class="card-title mt-3" id="card-price">
+                                                    Rs: ${product.OfferPrice ? product.OfferPrice : product.Price}
+                                                </h5>
+                                                ${product.OfferPrice ? `<h6>
+                                                <del>
+                                                    <span style="color: red;">Rs: ${product.Price}</span>
+                                                </del>
+                                                </h6>` : ""}          
                                             </div>
                                             <div class="ratings">
                                                 <i class="fa fa-star rating-color"></i>

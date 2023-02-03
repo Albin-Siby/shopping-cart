@@ -169,57 +169,12 @@ module.exports = {
                         item:1,quantity:1,product:1,total:1,offerTotal:1
                     }
                 }
-                // {
-                //     $lookup:{
-                //         from: collections.PRODUCT_COLLECTION,
-                //         let:{
-                //             prodList: '$products'
-                //         },
-                //         pipeline:[
-                //             {
-                //                 $match:{
-                //                     $expr: {
-                //                         $in:['$_id', '$$prodList']
-                //                     }
-                //                 }
-                //             }
-                //         ],
-                //         as: 'cartItems'
-                //     }
-                // }
             ]).toArray()
             //console.log(cartItems)
             res(cartItems)
            
         })
     },
-    // getCartCount: (userId) => {
-    //     return new Promise(async(res,rej) => {
-    //         let count = 0
-    //         let cart = db.get().collection(collections.CART_COLLECTION)
-    //         .find({user: ObjectId(userId)}).toArray()
-    //         .aggregate([
-    //             {
-    //                $match: {
-    //                   user: ObjectId(userId),
-    //                },
-    //             },
-    //             {
-    //                $project: {
-    //                   size: { $size: "$products" },
-    //                },
-    //             },
-    //          ])
-    //          .toArray();
-             
-    //          res(cart[0].size)
-    //         cart.forEach((item) => {
-    //             count += item.products.length;
-    //           });
-    //         res(count)
-    //     })
-    // }
-
     getCartProductCount: (userId) => {
         return new Promise(async(res,rej) => {  
           let count = 0;
@@ -478,26 +433,7 @@ module.exports = {
                         foreignField: '_id',
                         as: 'product'
                     }
-                },
-                // {
-                //     $project:{
-                //         item:1,
-                //         quantity:1,
-                //         product:1,
-                //         status: "$status",
-                //     }
-                // },
-                // {
-                //     $addFields: {
-                //         product: {
-                //             $map: {
-                //                 input: "$product",
-                //                 as: "p",
-                //                 in: { $mergeObjects: [ "$$p", { status: "$status" } ] }
-                //             }
-                //         }
-                //     }
-                // },                
+                },                
                 {
                     $project:{
                         item:1,
@@ -511,41 +447,6 @@ module.exports = {
             res(orderItems)
         })
     },
-    // cancelProduct: (orderId, proId) => {
-    //     return new Promise((res, rej) => {
-    //         db.get().collection(collections.ORDER_COLLECTION)
-    //         .aggregate([
-    //             { $match: { _id: ObjectId(orderId) } },
-    //             { $unwind: "$products" },
-    //             { $match: { "products.item": ObjectId(proId) } },
-    //             {
-    //                 $lookup:{
-    //                     from: collections.PRODUCT_COLLECTION,
-    //                     localField: 'item',
-    //                     foreignField: '_id',
-    //                     as: 'product'
-    //                 }
-    //             },
-    //             { $project: { _id: 0, product:1, price: "$product.price" } }
-    //         ]).toArray()
-    //         .then((result) => {
-    //             console.log(result)
-    //             const canceledProductPrice = parseInt(result[0].price);
-    //             db.get().collection(collections.ORDER_COLLECTION)
-    //             .updateOne(
-    //                 { _id: ObjectId(orderId) },
-    //                 { $inc: { total: -canceledProductPrice }, $pull: { "products": { "item": ObjectId(proId) } } }
-    //             )            
-    //             .then((response) => {
-    //                 db.get().collection(collections.ORDER_COLLECTION)
-    //                 .findOne({ _id: ObjectId(orderId) }, { total: 1 })
-    //                 .then((order) => {
-    //                     res({ status: true, total: order.total });
-    //                 });
-    //             });
-    //         });
-    //     });
-    // },
     cancelProduct: (orderId,proId) => {
         return new Promise(async(res,rej) => {
             let price;
@@ -586,22 +487,25 @@ module.exports = {
     getFilteredProducts: (maxPrice,cId) => {
         return new Promise(async(res,rej) => {
             let oneCategory = await db.get().collection(collections.CATEGORY_COLLECTION).findOne({_id: ObjectId(cId)})
-            let categoryDetails = await db.get().collection(collections.PRODUCT_COLLECTION)
-            .find({ 
-              $and: [
-                { Category: oneCategory.Name },
-                {
-                  $or: [
-                    { $and: [{ OfferPrice: 0 }, { Price: { $lte: maxPrice } }] },
-                    { OfferPrice: { $lte: maxPrice } }
-                  ]
-                }
-              ]
-            })
-            .toArray();
+            let categoryDetails = await db.get().collection(collections.PRODUCT_COLLECTION).find({Category: oneCategory.Name}).toArray()
 
-            console.log(categoryDetails)
             res(categoryDetails)
+        })
+    },
+    changePassword: (cPass,nPass,userId) => {
+        return new Promise(async(res,rej) => {
+            let user = await db.get().collection(collections.USER_COLLECTION).findOne({_id: ObjectId(userId)})
+            if(bcrypt.compareSync(cPass,user.Password)) {
+                let hash = bcrypt.hashSync(nPass, 10);
+                await db.get().collection(collections.USER_COLLECTION).updateOne(
+                    {_id: ObjectId(userId)},
+                    {$set: {Password: hash}}
+                ).then((response) => {
+                    res({status: true})
+                })
+            } else {
+                res({status: false})
+            }
         })
     }
 

@@ -331,7 +331,7 @@ router.post('/add-address',verifyLogin,[
   check("Country").not().isEmpty().withMessage("Country is required"),
   check("PinCode").not().isEmpty().withMessage("Zipcode is required"),
   check("Phone").not().isEmpty().withMessage("Phone number is required").isLength({ min: 10, max: 10 }).withMessage("Invalid phone number"),
-  check("Email").not().isEmpty().withMessage("Email is required").isEmail().withMessage("Email is invalid")
+  check("Email").not().isEmpty().withMessage("Email is required").isEmail().withMessage("Email is invalid"),
 ], (req,res) => {
   //console.log(req.body)
   const errors = validationResult(req);
@@ -475,11 +475,68 @@ router.post('/cancel-product', (req,res) => {
 router.post('/applyfilter', async(req,res) => {
   let maxPrice = req.body.maxValue
   let cId = req.body.cId
-  //console.log(maxPrice,cId)
+  let filteredProducts = []
+
   let products = await userHelper.getFilteredProducts(maxPrice,cId)
-    
   
-  res.json({products})
+  products.forEach((product) => {
+    if(product.OfferPrice === '0') {
+      if(product.Price <= maxPrice) {
+        filteredProducts.push(product)
+      }
+    } else {
+      if(product.OfferPrice <= maxPrice) {
+        filteredProducts.push(product)
+      }
+    }
+  })
+  
+  filteredProducts.forEach((product) => {
+    if(product.OfferPrice === '0') {
+      product.OfferPrice = ''
+    }
+  })
+  //console.log(filteredProducts)
+  res.json({filteredProducts})
+})
+
+router.post('/changepassword',[
+  check("Cpass").not().isEmpty().withMessage("Current Password is required"),
+  check("Npass").not().isEmpty().withMessage("New Password is required").isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+  check("Cnpass").not().isEmpty().withMessage("Confirm Password is required") 
+], async(req,res) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    let allNull = true;
+    if (errors.array().findIndex(error => error.param === "Cpass") === -1) {
+      allNull = false;
+    }
+    if (errors.array().findIndex(error => error.param === "Npass") === -1) {
+      allNull = false;
+    }
+    if (errors.array().findIndex(error => error.param === "Cnpass") === -1) {
+      allNull = false;
+    }
+    if (allNull) {
+      req.session.passworderrors = [{ msg: "All fields are required" }];
+      return res.json({ err: req.session.passworderrors })
+      } else {
+      req.session.passworderrors = errors.array();
+      return res.json({ errors: errors.array() })
+      }
+  }
+
+  let cPassword = req.body.Cpass
+  let newPassword = req.body.Npass
+  let conPassword = req.body.Cnpass
+  if(conPassword !== newPassword) {
+    return res.json({msg: "Confirm password must match new password"})
+  }
+  
+  await userHelper.changePassword(cPassword,newPassword,req.session.user._id).then((response) => {
+    res.json(response)
+  })
+ 
 })
 
 module.exports = router;
