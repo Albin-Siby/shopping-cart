@@ -167,9 +167,28 @@
                     //alert(response)
                     if(response.status) {
                         location.href = "/orderplaced"
+                    } else {
+                        if(response.paypalStatus) {
+                            paypalForwarding(response)
+                        }
                     }
                 }
             })
         }
     })
+
+    function paypalForwarding(response) {
+        $.ajax({
+            url: '/paypal',
+            type: "post",
+            data: {
+                paypalStatus: response.paypalStatus,
+                orderId: response.orderId,
+                total: response.total
+            },
+            success: (response) => {
+                location.href = response
+            }
+        })
+    }
 </script>

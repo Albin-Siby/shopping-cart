@@ -69,7 +69,7 @@ module.exports = {
                     Price: proDetails.Price,
                     OfferPrice: proDetails.OfferPrice,
                     Description: proDetails.Description,
-                    Stock: proDetails.Stock
+                    Stock: parseInt(proDetails.Stock)
                 }
             }).then((respond) => {
                 res()

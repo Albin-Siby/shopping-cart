@@ -3,6 +3,14 @@ var router = express.Router();
 var productHelper = require('../modal/product-helper')
 var userHelper = require('../modal/user-helper')
 const { check, validationResult } = require("express-validator");
+var paypal = require('paypal-rest-sdk')
+const CC = require('currency-converter-lt')
+
+paypal.configure({
+  'mode': 'sandbox', //sandbox or live
+  'client_id': 'AbH1dF-6BavUXWfSYE6Om5psImwJ-WBeLASsFMWSoGejsYLCfgxIw4Z4Qo0O53dUHzpfqQYzHHFotuoH',
+  'client_secret': 'EN8OsWw2R5N-azkSuTvH2OC-Nh-ip9BAlRlGa-nCfsBVNOR-9r0Qeh1XIv8m4hjXwijMW4UdY_H2wUl_'
+});
 
 const verifyLogin = (req,res,next) => {
   if(req.session.user) {
@@ -244,14 +252,18 @@ router.get('/cart',verifyLogin, async(req,res) => {
 router.get('/add-to-cart/:id', (req,res) => {
   let proId = req.params.id
   if(req.session.user) {
-    userHelper.addToCart(proId,req.session.user._id).then(() => {
-      //res.redirect('/')
-      res.json({status: true})
+    userHelper.checkStock(proId).then((stock) => {
+      if(stock <= 0) {
+       res.json({error: true});
+      } else {
+        userHelper.addToCart(proId,req.session.user._id).then(() => {
+          res.json({status: true})
+        })
+      }
     })
   } else {
     res.json({status:false})
   }
-  
 })
 
 router.post("/change-product-quantity", (req,res,next) => {
@@ -398,15 +410,72 @@ router.post('/checkout',verifyLogin, async(req, res) => {
     let cart = await userHelper.getCartProductList(req.session.user._id)
     let products = cart.products
     //console.log(products)
-    userHelper.placeOrder(paymentMethod,selectedAddress,total,products,req.session.user._id).then((response) => {
-      res.json({status: true})
-      return 
+    userHelper.placeOrder(paymentMethod,selectedAddress,total,products,req.session.user._id).then((orderId) => {
+      if(paymentMethod === "COD") {
+        res.json({status: true})
+        return 
+      } else {
+        res.json({ paypalStatus: true, orderId: orderId, total: total })
+      }
     })
   } catch (error) {
     console.log(error)
   }
 })
 
+router.post('/paypal', async(req,res) => {
+  let currencyConverter = new CC({from:"INR", to:"USD", amount:parseInt(req.body.total)})
+  let totalamount = await currencyConverter.convert()
+  const create_payment_json = {
+    intent: "sale",
+    payer: {
+       payment_method: "paypal",
+    },
+    redirect_urls: {
+       return_url: "http://localhost:3000/success/" + req.body.orderId,
+       cancel_url: "http://localhost:3000/cancel/" + req.body.orderId,
+    },
+    transactions: [
+       {
+          amount: {
+             currency: "USD",
+             total: totalamount,
+          },
+          description: "Hat for the best team ever",
+       },
+    ],
+  };
+
+  paypal.payment.create(create_payment_json, async function (error, payment) {
+    if (error) {
+       throw error;
+    } else {
+       for (let i = 0; i < payment.links.length; i++) {
+          if (payment.links[i].rel === "approval_url") {
+             res.json(payment.links[i].href);
+          }
+       }
+    }
+  });
+
+})
+
+router.get('/success/:orderId', (req,res) => {
+  let orderId = req.params.orderId
+  userHelper.changePaymentStatus(orderId).then(() => {
+    res.redirect('/orderplaced')
+  })
+
+})
+
+router.get('/cancel/:orderId', (req,res) => {
+  try {
+    res.redirect('/orderplaced'+ req.params.orderId)
+  }catch (error) {
+    res.redirect("/error");
+ }
+  
+})
 
 router.get('/orderplaced',verifyLogin, async(req,res) => {
   let user = req.session.user

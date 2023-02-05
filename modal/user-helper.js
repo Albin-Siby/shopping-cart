@@ -72,6 +72,16 @@ module.exports = {
             })
         })
     },
+    checkStock: (prodId) => {
+        return new Promise(async(res,rej) => {
+            let product = await db.get().collection(collections.PRODUCT_COLLECTION).findOne({_id: ObjectId(prodId)})
+            if(product) {
+                res(product.Stock)
+            } else {
+                rej()
+            }
+        })
+    },
     addToCart: (prodId,userId) => {
         let proObj = {
             item: ObjectId(prodId),
@@ -392,8 +402,18 @@ module.exports = {
                    
                 })
                 db.get().collection(collections.CART_COLLECTION).deleteOne({user: ObjectId(userId)})
-                res()
+               
+                res(response.insertedId)
             })
+        })
+    },
+    changePaymentStatus: (orderId) => {
+        return new Promise((res,rej) => {
+            db.get().collection(collections.ORDER_COLLECTION)
+               .updateOne({ _id: ObjectId(orderId) }, { $set: { status: "Placed" } }).then((data) => {
+                //console.log(data)
+                  res();
+               });
         })
     },
     getUserOrder: (userId) => {
@@ -460,18 +480,31 @@ module.exports = {
             const order = await db.get().collection(collections.ORDER_COLLECTION)
             .findOne({ _id: ObjectId(orderId) });
 
+            let products = order.products
             if(order.products.length > 1) {
                 await db.get().collection(collections.ORDER_COLLECTION)
                 .updateOne( 
                     { _id: ObjectId(orderId) }, 
                     { $inc: { total: -price }, $pull: { "products": { "item": ObjectId(proId) } } } 
                 ).then((response) => {
+                    products.forEach(async(product) => {
+                        let increment = 1 * product.quantity;
+                        await db.get().collection(collections.PRODUCT_COLLECTION)
+                        .updateOne({_id: ObjectId(product.item)}, {$inc: { Stock: increment}})
+                       
+                    })
                     res({status: true, length: true})
                 })
             } else {
                 await db.get().collection(collections.ORDER_COLLECTION)
                 .deleteOne({ _id: ObjectId(orderId) })
                 .then(response => {
+                    products.forEach(async(product) => {
+                        let increment = 1 * product.quantity;
+                        await db.get().collection(collections.PRODUCT_COLLECTION)
+                        .updateOne({_id: ObjectId(product.item)}, {$inc: { Stock: increment}})
+                       
+                    })
                     res({ status: true, length: false });
                 });
             }

@@ -10,8 +10,10 @@ function addToCart(proId) {
                 count = parseInt(count) + 1
                 $("#cart-count").html(count)
                 swal("Item Added to Cart!", "Your item has been added to your cart.", "success");
+            }else if(response.error) {
+                swal("Sorry, this item is currently out of stock", "", "info");
             } else {
-                swal("Warning","Please login to continue!", "warning");
+                swal("Please login to continue!","", "warning");
             }
         }
     });
