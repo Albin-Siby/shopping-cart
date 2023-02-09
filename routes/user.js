@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var productHelper = require('../modal/product-helper')
-var userHelper = require('../modal/user-helper')
+var productHelper = require('../Helpers/product-helper')
+var userHelper = require('../Helpers/user-helper')
 const { check, validationResult } = require("express-validator");
 var paypal = require('paypal-rest-sdk')
 const CC = require('currency-converter-lt')

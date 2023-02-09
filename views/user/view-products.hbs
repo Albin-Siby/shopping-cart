@@ -21,16 +21,16 @@
     }
     .card{
         position: relative;
-        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add a transition to the transform and box-shadow properties */
-        transform: scale(1); /* Set the initial scale to 1 */
-        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); /* Set the initial box shadow */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2); 
     }
     .card:hover {
-        transform: scale(1.1); /* Scale up the card by 10% when hovering */
-        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2); /* Add a box shadow when hovering */
+        transform: scale(1.1); 
+        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2);
     }
     .card:hover .image {
-        filter: blur(2px); /* Blur the image */
+        filter: blur(2px); 
     }
     .card #cart-button{
         display: none;
@@ -98,7 +98,6 @@
                             <div class="card-body">
                                 <div>
                                     <h5 class="card-title" id="card-name">{{this.Name}}</h5>
-                                    {{!-- <p class="card-text" style="color: rgb(99, 98, 98);">{{this.Description}}</p> --}}
                                     <h5 class="card-title mt-3" id="card-price">Rs: {{this.Price}}</h5>
                                 </div>
                                 <div class="ratings">
